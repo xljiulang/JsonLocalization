@@ -1,0 +1,9 @@
+{
+  "locales": {
+    "default": {
+      "key1": "Hello",
+      "key2": "Word",
+      "key3": 99
+    }
+  }
+}
