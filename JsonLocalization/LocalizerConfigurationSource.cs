@@ -13,26 +13,18 @@ namespace JsonLocalization
     {
         public override IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            EnsureDefaults(builder);
             return new LocalizerConfigurationProvider(this);
         }
 
-        private class LocalizerConfigurationProvider : JsonConfigurationProvider
+        private class LocalizerConfigurationProvider(LocalizerConfigurationSource source) : JsonConfigurationProvider(source)
         {
-            public LocalizerConfigurationProvider(LocalizerConfigurationSource source)
-                : base(source)
-            {
-            }
-
             public override void Load(Stream stream)
             {
                 base.Load(stream);
 
+                // 将语言区域添加到每个键的前缀
                 var culture = System.IO.Path.GetFileNameWithoutExtension(this.Source.Path);
-                if (string.IsNullOrEmpty(culture) == false)
-                {
-                    this.Data = this.Data.ToDictionary(kv => $"cultures:{culture}:{kv.Key}", kv => kv.Value, StringComparer.OrdinalIgnoreCase);
-                }
+                this.Data = this.Data.ToDictionary(kv => $"cultures:{culture}:{kv.Key}", kv => kv.Value, StringComparer.OrdinalIgnoreCase);
             }
         }
     }
