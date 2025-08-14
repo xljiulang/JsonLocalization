@@ -3,29 +3,32 @@ using System.Globalization;
 
 namespace JsonLocalization
 {
-    public class JsonLocalizationOptions
+    /// <summary>
+    /// 本地化选项
+    /// </summary>
+    public class LocalizerOptions
     {
         /// <summary>
         /// 获取默认语言区域
         /// </summary>
-        public CultureInfo DefaultLocale { get; internal set; } = CultureInfo.CurrentCulture;
+        public CultureInfo DefaultCulture { get; internal set; } = CultureInfo.CurrentCulture;
 
         /// <summary>
         /// 获取本地化数据的 json 文件目录
         /// 默认值为 locales
         /// </summary>
-        public string LocalesDirectory { get; internal set; } = "locales";
+        public string CulturesDirectory { get; internal set; } = "cultures";
 
         /// <summary>
         /// 获取指定语言区域，不存在则返回默认语言区域
         /// </summary>
         /// <param name="culture"></param>
         /// <returns></returns>
-        public CultureInfo GetLocale(string? culture)
+        public CultureInfo GetCulture(string? culture)
         {
             if (string.IsNullOrEmpty(culture))
             {
-                return this.DefaultLocale;
+                return this.DefaultCulture;
             }
 
             try
@@ -34,7 +37,7 @@ namespace JsonLocalization
             }
             catch (Exception)
             {
-                return this.DefaultLocale;
+                return this.DefaultCulture;
             }
         }
     }

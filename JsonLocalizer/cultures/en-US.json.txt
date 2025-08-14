@@ -1,8 +1,8 @@
 {
-  "locales": {
-    "zh-TW": {
-      "key1": "壹",
-      "key2": "贰",
+  "cultures": {
+    "en-US": {
+      "key1": "1",
+      "key2": "2",
       "home": {
         "title": "首页",
         "description": "This is the home page of the application.",

@@ -12,15 +12,15 @@ namespace JsonLocalizer
         static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.AddJsonLocalization<Locale>("zh");
+            builder.AddLocalizer<Locale>("zh");
             builder.Services.AddControllers();
 
             var app = builder.Build();
             app.Use(next => context =>
             {
                 context.Request.Query.TryGetValue("culture", out var culture);
-                var options = context.RequestServices.GetRequiredService<IOptions<JsonLocalizationOptions>>();
-                Thread.CurrentThread.CurrentCulture = options.Value.GetLocale(culture);
+                var options = context.RequestServices.GetRequiredService<IOptions<LocalizerOptions>>();
+                Thread.CurrentThread.CurrentCulture = options.Value.GetCulture(culture);
                 return next(context);
             });
 

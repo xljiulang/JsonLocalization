@@ -1,5 +1,6 @@
 ﻿using JsonLocalization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace JsonLocalizer.Controllers
 {
@@ -7,7 +8,8 @@ namespace JsonLocalizer.Controllers
     {
         [HttpGet("/")]
         public Locale Index([FromServices] Locale locale, [FromServices] ILocalizer<Locale> localizer)
-        {
+        { 
+            Debug.Assert(locale == localizer.Current);
             return locale;
         }
     }

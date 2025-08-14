@@ -3,17 +3,17 @@ using System.Threading;
 
 namespace JsonLocalization
 {
-    sealed class Localizer<TModel> : ILocalizer<TModel>
+    sealed class Localizer<TOptions> : ILocalizer<TOptions>
     {
-        private readonly IOptionsMonitor<TModel> modelFactory;
+        private readonly IOptionsMonitor<TOptions> optionsMonitor;
 
-        public TModel Current => this.Get(Thread.CurrentThread.CurrentCulture.Name);
+        public TOptions Current => this.Get(Thread.CurrentThread.CurrentCulture.Name);
 
-        public TModel Get(string culture) => this.modelFactory.Get(culture);
+        public TOptions Get(string culture) => this.optionsMonitor.Get(culture);
 
-        public Localizer(IOptionsMonitor<TModel> modelFactory)
+        public Localizer(IOptionsMonitor<TOptions> optionsMonitor)
         {
-            this.modelFactory = modelFactory;
+            this.optionsMonitor = optionsMonitor;
         }
     }
 }

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace JsonLocalization
 {
-    sealed partial class LocalePersister<TTLocale>
+    sealed partial class LocalizerPersister<TTLocale>
     {
-        private readonly IOptions<JsonLocalizationOptions> options;
+        private readonly IOptions<LocalizerOptions> options;
         private readonly IOptionsMonitor<TTLocale> localeFactory;
         private static readonly JsonSerializerOptions jsonSerializerOptions = new()
         {
@@ -19,8 +19,8 @@ namespace JsonLocalization
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
 
-        public LocalePersister(
-            IOptions<JsonLocalizationOptions> options,
+        public LocalizerPersister(
+            IOptions<LocalizerOptions> options,
             IOptionsMonitor<TTLocale> localeFactory)
         {
             this.options = options;
@@ -29,13 +29,13 @@ namespace JsonLocalization
 
         public async Task SaveAsync(CancellationToken cancellationToken = default)
         {
-            foreach (var jsonFile in Directory.GetFiles(this.options.Value.LocalesDirectory, "*.json"))
+            foreach (var jsonFile in Directory.GetFiles(this.options.Value.CulturesDirectory, "*.json"))
             {
                 var localeName = Path.GetFileNameWithoutExtension(jsonFile);
                 var locale = this.localeFactory.Get(localeName);
-                var localeFile = new LocaleFile<TTLocale>
+                var localeFile = new LocalizerFile<TTLocale>
                 {
-                    Locales = new Dictionary<string, TTLocale> { [localeName] = locale }
+                    Cultures = new Dictionary<string, TTLocale> { [localeName] = locale }
                 };
 
                 var jsonContent = JsonSerializer.SerializeToUtf8Bytes(localeFile, jsonSerializerOptions);

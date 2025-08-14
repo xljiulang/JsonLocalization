@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace JsonLocalization
 {
-    sealed class LocalePersisterService<TTLocale> : BackgroundService
+    sealed class LocalizerPersisterService<TTLocale> : BackgroundService
     {
-        private readonly LocalePersister<TTLocale> localePersister;
+        private readonly LocalizerPersister<TTLocale> localePersister;
 
-        public LocalePersisterService(LocalePersister<TTLocale> localePersister)
+        public LocalizerPersisterService(LocalizerPersister<TTLocale> localePersister)
         {
             this.localePersister = localePersister;
         }
