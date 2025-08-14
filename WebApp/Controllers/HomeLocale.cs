@@ -1,4 +1,4 @@
-﻿namespace JsonLocalizer.Controllers
+﻿namespace WebApp.Controllers
 {
     public class HomeLocale
     {

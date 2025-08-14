@@ -1,6 +1,6 @@
-﻿using JsonLocalizer.Controllers;
+﻿using WebApp.Controllers;
 
-namespace JsonLocalizer
+namespace WebApp
 {
     public class Locale
     {

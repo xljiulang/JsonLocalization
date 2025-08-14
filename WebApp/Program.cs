@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System.Threading;
 
-namespace JsonLocalizer
+namespace WebApp
 {
     sealed class Program
     {
