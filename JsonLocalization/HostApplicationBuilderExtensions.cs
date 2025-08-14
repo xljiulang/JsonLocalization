@@ -40,15 +40,9 @@ namespace Microsoft.Extensions.Hosting
         public static IHostApplicationBuilder AddLocalizer<TOptions>(this IHostApplicationBuilder builder, CultureInfo defaultCulture, string resourcesPath = "cultures")
             where TOptions : class, new()
         {
-            // 配置参数到 LocalizerOptions
-            builder.Services.PostConfigure<LocalizerOptions>(options =>
-            {
-                options.DefaultCulture = defaultCulture;
-                options.ResourcesPath = resourcesPath;
-            });
-
-
-            foreach (var jsonFile in Directory.GetFiles(resourcesPath, "*.json"))
+            // 添加配置文件
+            var jsonFiles = Directory.GetFiles(resourcesPath, "*.json");
+            foreach (var jsonFile in jsonFiles)
             {
                 builder.Configuration.Add<LocalizerConfigurationSource>(s =>
                 {
@@ -57,7 +51,19 @@ namespace Microsoft.Extensions.Hosting
                     s.ReloadOnChange = true;
                     s.ResolveFileProvider();
                 });
+            }
 
+            // 配置参数到 LocalizerOptions
+            builder.Services.PostConfigure<LocalizerOptions>(options =>
+            {
+                options.DefaultCulture = defaultCulture;
+                options.ResourcesPath = resourcesPath;
+            });
+
+
+            // 配置每个语言区域的本地化数据
+            foreach (var jsonFile in jsonFiles)
+            {
                 var culture = Path.GetFileNameWithoutExtension(jsonFile);
                 var configuration = builder.Configuration.GetSection($"cultures:{culture}");
 
