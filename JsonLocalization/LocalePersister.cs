@@ -37,7 +37,7 @@ namespace JsonLocalization
                 };
 
                 var jsonContent = JsonSerializer.SerializeToUtf8Bytes(localeFile, jsonSerializerOptions);
-                await File.WriteAllBytesAsync(jsonFile, jsonContent, cancellationToken);
+                await File.WriteAllBytesAsync(jsonFile + ".txt", jsonContent, cancellationToken);
             }
         }
     }
