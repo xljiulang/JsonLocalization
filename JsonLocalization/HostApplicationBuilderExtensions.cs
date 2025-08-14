@@ -40,6 +40,7 @@ namespace Microsoft.Extensions.Hosting
         public static IHostApplicationBuilder AddLocalizer<TOptions>(this IHostApplicationBuilder builder, CultureInfo defaultCulture, string resourcesPath = "cultures")
             where TOptions : class, new()
         {
+            // 配置参数到 LocalizerOptions
             builder.Services.PostConfigure<LocalizerOptions>(options =>
             {
                 options.DefaultCulture = defaultCulture;
@@ -66,9 +67,6 @@ namespace Microsoft.Extensions.Hosting
             builder.Services.TryAddTransient<IOptionsFactory<TOptions>, LocalizerOptionsFactory<TOptions>>();
             builder.Services.TryAddSingleton<ILocalizer<TOptions>, Localizer<TOptions>>();
             builder.Services.TryAddTransient(s => s.GetRequiredService<ILocalizer<TOptions>>().Current);
-
-            builder.Services.TryAddSingleton<LocalizerResourcePersister<TOptions>>();
-            builder.Services.AddHostedService<LocalizerResourcePersisterService<TOptions>>();
             return builder;
         }
     }
