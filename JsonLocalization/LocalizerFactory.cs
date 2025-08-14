@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace JsonLocalization
 {
-    sealed class LocalizerOptionsFactory<TOptions> : IOptionsFactory<TOptions>
+    sealed class LocalizerFactory<TOptions> : IOptionsFactory<TOptions>
          where TOptions : class, new()
     {
         private readonly IConfigureOptions<TOptions>[] _setups;
@@ -12,7 +12,7 @@ namespace JsonLocalization
         private readonly IValidateOptions<TOptions>[] _validations;
 
 
-        public LocalizerOptionsFactory(IEnumerable<IConfigureOptions<TOptions>> setups, IEnumerable<IPostConfigureOptions<TOptions>> postConfigures, IEnumerable<IValidateOptions<TOptions>> validations)
+        public LocalizerFactory(IEnumerable<IConfigureOptions<TOptions>> setups, IEnumerable<IPostConfigureOptions<TOptions>> postConfigures, IEnumerable<IValidateOptions<TOptions>> validations)
         {
             _setups = setups as IConfigureOptions<TOptions>[] ?? setups.ToArray();
             _postConfigures = postConfigures as IPostConfigureOptions<TOptions>[] ?? postConfigures.ToArray();

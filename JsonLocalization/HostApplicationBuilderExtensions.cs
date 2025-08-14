@@ -64,7 +64,7 @@ namespace Microsoft.Extensions.Hosting
                 }
             }
 
-            builder.Services.TryAddTransient<IOptionsFactory<TOptions>, LocalizerOptionsFactory<TOptions>>();
+            builder.Services.TryAddTransient<IOptionsFactory<TOptions>, LocalizerFactory<TOptions>>();
             builder.Services.TryAddSingleton<ILocalizer<TOptions>, Localizer<TOptions>>();
             builder.Services.TryAddTransient(s => s.GetRequiredService<ILocalizer<TOptions>>().Current);
             return builder;
