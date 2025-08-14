@@ -13,6 +13,7 @@ namespace JsonLocalization
     {
         public override IConfigurationProvider Build(IConfigurationBuilder builder)
         {
+            EnsureDefaults(builder);
             return new LocalizerConfigurationProvider(this);
         }
 
