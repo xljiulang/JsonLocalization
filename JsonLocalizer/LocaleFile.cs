@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace JsonLocalizer
+namespace JsonLocalization
 {
     sealed class LocaleFile<TLocale>
     {

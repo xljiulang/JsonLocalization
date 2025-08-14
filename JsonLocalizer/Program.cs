@@ -1,28 +1,39 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using System;
 using System.Globalization;
 using System.Threading;
 
-namespace JsonLocalizer
+namespace JsonLocalization
 {
     internal class Program
     {
         static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.AddJsonLocalizer<Locale>();
+            builder.AddJsonLocalization<Locale>("en-US");
 
             var app = builder.Build();
             app.Use(next => ctx =>
             {
-                if (ctx.Request.Query.TryGetValue("culture", out var culture))
+                Thread.CurrentThread.CurrentCulture = GetCultureInfo();
+                CultureInfo GetCultureInfo()
                 {
-                    var cultureName = culture.ToString();
-                    if (cultureName != null)
+                    if (ctx.Request.Query.TryGetValue("culture", out var culture))
                     {
-                        Thread.CurrentThread.CurrentCulture = new CultureInfo(cultureName);
+                        try
+                        {
+                            return CultureInfo.GetCultureInfo(culture!);
+                        }
+                        catch (Exception)
+                        {
+                        }
                     }
+                    return ctx.RequestServices.GetRequiredService<IOptions<JsonLocalizationOptions>>().Value.DefaultLocale;
                 }
+
                 return next(ctx);
             });
 

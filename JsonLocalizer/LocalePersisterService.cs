@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JsonLocalizer
+namespace JsonLocalization
 {
     sealed class LocalePersisterService<TTLocale> : BackgroundService
     {

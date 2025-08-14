@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JsonLocalizer
+namespace JsonLocalization
 {
     sealed partial class LocalePersister<TTLocale>
     {

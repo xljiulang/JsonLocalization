@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace JsonLocalizer
+namespace JsonLocalization
 {
   
-    sealed class LocaleFactory<TLocale> : IOptionsFactory<TLocale>
+    sealed class LocaleOptionsFactory<TLocale> : IOptionsFactory<TLocale>
          where TLocale : class, new()
     {
         private readonly IConfigureOptions<TLocale>[] _setups;
@@ -13,7 +13,7 @@ namespace JsonLocalizer
         private readonly IValidateOptions<TLocale>[] _validations;
 
         
-        public LocaleFactory(IEnumerable<IConfigureOptions<TLocale>> setups, IEnumerable<IPostConfigureOptions<TLocale>> postConfigures, IEnumerable<IValidateOptions<TLocale>> validations)
+        public LocaleOptionsFactory(IEnumerable<IConfigureOptions<TLocale>> setups, IEnumerable<IPostConfigureOptions<TLocale>> postConfigures, IEnumerable<IValidateOptions<TLocale>> validations)
         {
             _setups = setups as IConfigureOptions<TLocale>[] ?? setups.ToArray();
             _postConfigures = postConfigures as IPostConfigureOptions<TLocale>[] ?? postConfigures.ToArray();

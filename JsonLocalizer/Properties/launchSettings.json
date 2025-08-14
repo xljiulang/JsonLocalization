@@ -1,12 +1,12 @@
 {
   "profiles": {
-    "JsonLocalizer": {
+    "JsonLocalization": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:64911;http://localhost:64912"
+      "applicationUrl": "http://localhost:64912"
     }
   }
 }
