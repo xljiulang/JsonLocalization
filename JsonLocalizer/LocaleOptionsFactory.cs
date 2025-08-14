@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace JsonLocalization
 {
-  
+
     sealed class LocaleOptionsFactory<TLocale> : IOptionsFactory<TLocale>
          where TLocale : class, new()
     {
@@ -12,7 +12,7 @@ namespace JsonLocalization
         private readonly IPostConfigureOptions<TLocale>[] _postConfigures;
         private readonly IValidateOptions<TLocale>[] _validations;
 
-        
+
         public LocaleOptionsFactory(IEnumerable<IConfigureOptions<TLocale>> setups, IEnumerable<IPostConfigureOptions<TLocale>> postConfigures, IEnumerable<IValidateOptions<TLocale>> validations)
         {
             _setups = setups as IConfigureOptions<TLocale>[] ?? setups.ToArray();
@@ -27,21 +27,30 @@ namespace JsonLocalization
         /// <returns></returns>
         public TLocale Create(string name)
         {
-            var defaultOptions = this.Create(Options.DefaultName, default);
+            var defaultLocale = this.CreateCore(Options.DefaultName, default);
             if (string.IsNullOrEmpty(name))
             {
-                return defaultOptions;
+                return defaultLocale;
             }
 
-            var index = name.IndexOf('-');
-            if (index < 0)
+            int index;
+            var culture = name;
+            var stack = new Stack<string>();
+            stack.Push(culture);
+
+            while ((index = culture.LastIndexOf('-')) >= 0)
             {
-                return this.Create(name, defaultOptions);
+                culture = culture[..index];
+                stack.Push(culture);
             }
 
-            var langName = name[..index];
-            var langOptions = this.Create(langName, defaultOptions);
-            return this.Create(name, langOptions);
+            var locale = defaultLocale;
+            while (stack.TryPop(out var next))
+            {
+                locale = this.CreateCore(next, locale);
+            }
+
+            return locale;
         }
 
         /// <summary>
@@ -50,7 +59,7 @@ namespace JsonLocalization
         /// <param name="name"></param>
         /// <param name="options">传入的实例</param>
         /// <returns></returns>
-        private TLocale Create(string name, TLocale? options)
+        private TLocale CreateCore(string name, TLocale? options)
         {
             if (options == null)
             {
