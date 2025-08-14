@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.Hosting
         public static IHostApplicationBuilder AddJsonLocalization<TLocale>(this IHostApplicationBuilder builder, string defaultLocale, string localesDirectory = "locales")
             where TLocale : class, new()
         {
-            return builder.AddJsonLocalization<TLocale>(new CultureInfo(defaultLocale), localesDirectory);
+            return builder.AddJsonLocalization<TLocale>(CultureInfo.GetCultureInfo(defaultLocale), localesDirectory);
         }
 
         /// <summary>
@@ -37,15 +37,19 @@ namespace Microsoft.Extensions.Hosting
         public static IHostApplicationBuilder AddJsonLocalization<TLocale>(this IHostApplicationBuilder builder, CultureInfo defaultLocale, string localesDirectory = "locales")
             where TLocale : class, new()
         {
-            builder.Services.Configure<JsonLocalizationOptions>(o => o.DefaultLocale = defaultLocale);
+            builder.Services.PostConfigure<JsonLocalizationOptions>(options =>
+            {
+                options.DefaultLocale = defaultLocale;
+                options.LocalesDirectory = localesDirectory;
+            });
 
-            var locales = nameof(LocaleFile<TLocale>.Locales);
+
             foreach (var jsonFile in Directory.GetFiles(localesDirectory, "*.json"))
             {
                 builder.Configuration.AddJsonFile(jsonFile, optional: true, reloadOnChange: true);
 
                 var localeName = Path.GetFileNameWithoutExtension(jsonFile);
-                var configuration = builder.Configuration.GetSection($"{locales}:{localeName}");
+                var configuration = builder.Configuration.GetSection($"{nameof(LocaleFile<TLocale>.Locales)}:{localeName}");
                 if (localeName.Equals(defaultLocale.Name, StringComparison.OrdinalIgnoreCase))
                 {
                     builder.Services.Configure<TLocale>(configuration);
@@ -59,7 +63,7 @@ namespace Microsoft.Extensions.Hosting
             builder.Services.TryAddTransient<IOptionsFactory<TLocale>, LocaleOptionsFactory<TLocale>>();
             builder.Services.TryAddTransient(s => s.GetRequiredService<IOptionsMonitor<TLocale>>().Get(Thread.CurrentThread.CurrentCulture.Name));
 
-            builder.Services.TryAddSingleton(s => new LocalePersister<TLocale>(localesDirectory, s.GetRequiredService<IOptionsMonitor<TLocale>>()));
+            builder.Services.TryAddSingleton<LocalePersister<TLocale>>();
             builder.Services.AddHostedService<LocalePersisterService<TLocale>>();
             return builder;
         }

@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using System;
-using System.Globalization;
 using System.Threading;
 
 namespace JsonLocalizer
@@ -18,25 +16,12 @@ namespace JsonLocalizer
             builder.Services.AddControllers();
 
             var app = builder.Build();
-            app.Use(next => ctx =>
+            app.Use(next => context =>
             {
-                Thread.CurrentThread.CurrentCulture = GetCultureInfo();
-                CultureInfo GetCultureInfo()
-                {
-                    if (ctx.Request.Query.TryGetValue("culture", out var culture))
-                    {
-                        try
-                        {
-                            return CultureInfo.GetCultureInfo(culture!);
-                        }
-                        catch (Exception)
-                        {
-                        }
-                    }
-                    return ctx.RequestServices.GetRequiredService<IOptions<JsonLocalizationOptions>>().Value.DefaultLocale;
-                }
-
-                return next(ctx);
+                context.Request.Query.TryGetValue("culture", out var culture);
+                var options = context.RequestServices.GetRequiredService<IOptions<JsonLocalizationOptions>>();
+                Thread.CurrentThread.CurrentCulture = options.Value.GetLocale(culture);
+                return next(context);
             });
 
             app.MapControllers();

@@ -10,8 +10,8 @@ namespace JsonLocalization
 {
     sealed partial class LocalePersister<TTLocale>
     {
-        private readonly string localesDirectory;
-        private readonly IOptionsMonitor<TTLocale> localeOptions;
+        private readonly IOptions<JsonLocalizationOptions> options;
+        private readonly IOptionsMonitor<TTLocale> localeFactory;
         private static readonly JsonSerializerOptions jsonSerializerOptions = new()
         {
             WriteIndented = true,
@@ -19,18 +19,20 @@ namespace JsonLocalization
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
 
-        public LocalePersister(string localesDirectory, IOptionsMonitor<TTLocale> localeOptions)
+        public LocalePersister(
+            IOptions<JsonLocalizationOptions> options,
+            IOptionsMonitor<TTLocale> localeFactory)
         {
-            this.localesDirectory = localesDirectory;
-            this.localeOptions = localeOptions;
+            this.options = options;
+            this.localeFactory = localeFactory;
         }
 
         public async Task SaveAsync(CancellationToken cancellationToken = default)
         {
-            foreach (var jsonFile in Directory.GetFiles(this.localesDirectory, "*.json"))
+            foreach (var jsonFile in Directory.GetFiles(this.options.Value.LocalesDirectory, "*.json"))
             {
                 var localeName = Path.GetFileNameWithoutExtension(jsonFile);
-                var locale = this.localeOptions.Get(localeName);
+                var locale = this.localeFactory.Get(localeName);
                 var localeFile = new LocaleFile<TTLocale>
                 {
                     Locales = new Dictionary<string, TTLocale> { [localeName] = locale }
