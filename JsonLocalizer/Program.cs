@@ -9,12 +9,13 @@ using System.Threading;
 
 namespace JsonLocalizer
 {
-    internal class Program
+    sealed class Program
     {
         static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.AddJsonLocalization<Locale>("zh");
+            builder.Services.AddControllers();
 
             var app = builder.Build();
             app.Use(next => ctx =>
@@ -38,20 +39,8 @@ namespace JsonLocalizer
                 return next(ctx);
             });
 
-            app.Map("/", (Locale locale) =>
-            {
-                return locale;
-            });
+            app.MapControllers();
             app.Run();
         }
-    }
-
-    public class Locale
-    {
-        public string Key1 { get; set; } = "Hello";
-
-        public string Key2 { get; set; } = "Word";
-
-        public int Key3 { get; set; } = 5;
     }
 }
