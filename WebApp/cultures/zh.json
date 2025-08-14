@@ -1,11 +1,7 @@
 {
-  "cultures": {
-    "zh": {
-      "key1": "一",
-      "key2": "两",
-      "home": {
-        "title": "首页"
-      }
-    }
+  "key1": "一",
+  "key2": "二",
+  "home": {
+    "title": "首页"
   }
 }

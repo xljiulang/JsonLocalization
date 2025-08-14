@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -58,18 +57,13 @@ namespace JsonLocalization
                 culture = this.options.Value.DefaultCulture.Name;
             }
 
-            var resource = new LocalizerResource<TOptions>
-            {
-                Cultures = new Dictionary<string, TOptions> { [culture] = optionsValue }
-            };
-
             try
             {
-                var resourceJson = JsonSerializer.SerializeToUtf8Bytes(resource, jsonSerializerOptions);
-                var resourceValueFile = Path.Combine(this.options.Value.ResourcesPath, $"{culture}.json.value");
-                using var fileStream = File.Create(resourceValueFile);
+                var valueJson = JsonSerializer.SerializeToUtf8Bytes(optionsValue, jsonSerializerOptions);
+                var valueFile = Path.Combine(this.options.Value.ResourcesPath, $"{culture}.json.value");
+                using var fileStream = File.Create(valueFile);
                 fileStream.Write("// 这是自动生成的语言文件的完整键和值\r\n"u8);
-                fileStream.Write(resourceJson);
+                fileStream.Write(valueJson);
             }
             catch (Exception)
             {

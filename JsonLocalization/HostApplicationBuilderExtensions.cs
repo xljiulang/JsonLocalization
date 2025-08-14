@@ -50,10 +50,17 @@ namespace Microsoft.Extensions.Hosting
 
             foreach (var jsonFile in Directory.GetFiles(resourcesPath, "*.json"))
             {
-                builder.Configuration.AddJsonFile(jsonFile, optional: true, reloadOnChange: true);
+                builder.Configuration.Add<LocalizerConfigurationSource>(s =>
+                {
+                    s.Path = jsonFile;
+                    s.Optional = true;
+                    s.ReloadOnChange = true;
+                    s.ResolveFileProvider();
+                });
 
                 var culture = Path.GetFileNameWithoutExtension(jsonFile);
-                var configuration = builder.Configuration.GetSection($"{nameof(LocalizerResource<TOptions>.Cultures)}:{culture}");
+                var configuration = builder.Configuration.GetSection($"cultures:{culture}");
+
                 if (culture.Equals(defaultCulture.Name, StringComparison.OrdinalIgnoreCase))
                 {
                     builder.Services.Configure<TOptions>(configuration);
