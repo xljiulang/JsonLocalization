@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using JsonLocalization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -6,7 +7,7 @@ using System;
 using System.Globalization;
 using System.Threading;
 
-namespace JsonLocalization
+namespace JsonLocalizer
 {
     internal class Program
     {

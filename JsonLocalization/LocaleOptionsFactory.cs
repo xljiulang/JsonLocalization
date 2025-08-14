@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace JsonLocalization
 {
-
     sealed class LocaleOptionsFactory<TLocale> : IOptionsFactory<TLocale>
          where TLocale : class, new()
     {
