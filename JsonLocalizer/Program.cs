@@ -12,7 +12,7 @@ namespace JsonLocalizer
         static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.AddLocalizer<Locale>("zh");
+            builder.AddLocalizer<Locale>("en");
             builder.Services.AddControllers();
 
             var app = builder.Build();

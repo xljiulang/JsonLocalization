@@ -20,12 +20,13 @@ namespace Microsoft.Extensions.Hosting
         /// <typeparam name="TOptions">本地化的数据类型</typeparam>
         /// <param name="builder"></param>
         /// <param name="defaultCulture">默认语言区域</param>
-        /// <param name="culturesDirectory">本地化数据的 json 文件相对目录</param>
+        /// <param name="resourcesPath">本地化数据的资源文件目录</param>
         /// <returns></returns>
-        public static IHostApplicationBuilder AddLocalizer<TOptions>(this IHostApplicationBuilder builder, string defaultCulture, string culturesDirectory = "cultures")
+        public static IHostApplicationBuilder AddLocalizer<TOptions>(this IHostApplicationBuilder builder, string defaultCulture, string resourcesPath = "cultures")
             where TOptions : class, new()
         {
-            return builder.AddLocalizer<TOptions>(CultureInfo.GetCultureInfo(defaultCulture), culturesDirectory);
+            ArgumentException.ThrowIfNullOrWhiteSpace(resourcesPath);
+            return builder.AddLocalizer<TOptions>(CultureInfo.GetCultureInfo(defaultCulture), resourcesPath);
         }
 
         /// <summary>
@@ -34,31 +35,31 @@ namespace Microsoft.Extensions.Hosting
         /// <typeparam name="TOptions">本地化的数据类型</typeparam>
         /// <param name="builder"></param>
         /// <param name="defaultCulture">默认语言区域</param>
-        /// <param name="culturesDirectory">本地化数据的 json 文件相对目录</param>
+        /// <param name="resourcesPath">本地化数据的资源文件目录</param>
         /// <returns></returns>
-        public static IHostApplicationBuilder AddLocalizer<TOptions>(this IHostApplicationBuilder builder, CultureInfo defaultCulture, string culturesDirectory = "cultures")
+        public static IHostApplicationBuilder AddLocalizer<TOptions>(this IHostApplicationBuilder builder, CultureInfo defaultCulture, string resourcesPath = "cultures")
             where TOptions : class, new()
         {
             builder.Services.PostConfigure<LocalizerOptions>(options =>
             {
                 options.DefaultCulture = defaultCulture;
-                options.CulturesDirectory = culturesDirectory;
+                options.ResourcesPath = resourcesPath;
             });
 
 
-            foreach (var jsonFile in Directory.GetFiles(culturesDirectory, "*.json"))
+            foreach (var jsonFile in Directory.GetFiles(resourcesPath, "*.json"))
             {
                 builder.Configuration.AddJsonFile(jsonFile, optional: true, reloadOnChange: true);
 
-                var localeName = Path.GetFileNameWithoutExtension(jsonFile);
-                var configuration = builder.Configuration.GetSection($"{nameof(LocalizerFile<TOptions>.Cultures)}:{localeName}");
-                if (localeName.Equals(defaultCulture.Name, StringComparison.OrdinalIgnoreCase))
+                var culture = Path.GetFileNameWithoutExtension(jsonFile);
+                var configuration = builder.Configuration.GetSection($"{nameof(LocalizerResource<TOptions>.Cultures)}:{culture}");
+                if (culture.Equals(defaultCulture.Name, StringComparison.OrdinalIgnoreCase))
                 {
                     builder.Services.Configure<TOptions>(configuration);
                 }
                 else
                 {
-                    builder.Services.Configure<TOptions>(localeName, configuration);
+                    builder.Services.Configure<TOptions>(culture, configuration);
                 }
             }
 
@@ -66,8 +67,8 @@ namespace Microsoft.Extensions.Hosting
             builder.Services.TryAddSingleton<ILocalizer<TOptions>, Localizer<TOptions>>();
             builder.Services.TryAddTransient(s => s.GetRequiredService<ILocalizer<TOptions>>().Current);
 
-            builder.Services.TryAddSingleton<LocalizerPersister<TOptions>>();
-            builder.Services.AddHostedService<LocalizerPersisterService<TOptions>>();
+            builder.Services.TryAddSingleton<LocalizerResourcePersister<TOptions>>();
+            builder.Services.AddHostedService<LocalizerResourcePersisterService<TOptions>>();
             return builder;
         }
     }

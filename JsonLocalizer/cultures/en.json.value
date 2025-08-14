@@ -1,10 +1,10 @@
 {
   "cultures": {
-    "en-US": {
-      "key1": "1",
-      "key2": "2",
+    "en": {
+      "key1": "one",
+      "key2": "two",
       "home": {
-        "title": "首页",
+        "title": "Home Page",
         "description": "This is the home page of the application.",
         "welcomeMessage": "Welcome to our application!",
         "footer": "© 2025 Your Company Name. All rights reserved."

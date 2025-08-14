@@ -14,10 +14,10 @@ namespace JsonLocalization
         public CultureInfo DefaultCulture { get; internal set; } = CultureInfo.CurrentCulture;
 
         /// <summary>
-        /// 获取本地化数据的 json 文件目录
-        /// 默认值为 locales
+        /// 获取本地化数据的资源文件目录
+        /// 默认值为 cultures
         /// </summary>
-        public string CulturesDirectory { get; internal set; } = "cultures";
+        public string ResourcesPath { get; internal set; } = "cultures";
 
         /// <summary>
         /// 获取指定语言区域，不存在则返回默认语言区域

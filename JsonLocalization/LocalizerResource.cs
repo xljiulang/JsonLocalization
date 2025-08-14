@@ -2,7 +2,7 @@
 
 namespace JsonLocalization
 {
-    sealed class LocalizerFile<TOptions>
+    sealed class LocalizerResource<TOptions>
     {
         public required Dictionary<string, TOptions> Cultures { get; init; }
     }
