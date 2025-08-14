@@ -12,10 +12,14 @@ namespace WebApp
         static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.AddLocalizer<Locale>("en");
-            builder.Services.AddControllers();
 
+            // 添加本地化工具，默认语言区域为 "en"
+            builder.AddLocalizer<Locale>(defaultCulture: "en");
+
+            builder.Services.AddControllers();
             var app = builder.Build();
+
+            // 中间件设置当前线程的语言区域
             app.Use(next => context =>
             {
                 context.Request.Query.TryGetValue("culture", out var culture);

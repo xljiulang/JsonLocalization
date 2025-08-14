@@ -66,7 +66,10 @@ namespace JsonLocalization
             try
             {
                 var resourceJson = JsonSerializer.SerializeToUtf8Bytes(resource, jsonSerializerOptions);
-                File.WriteAllBytes(Path.Combine(this.options.Value.ResourcesPath, $"{culture}.json.value"), resourceJson);
+                var resourceValueFile = Path.Combine(this.options.Value.ResourcesPath, $"{culture}.json.value");
+                using var fileStream = File.Create(resourceValueFile);
+                fileStream.Write("// 这是自动生成的语言文件的完整键和值\r\n"u8);
+                fileStream.Write(resourceJson);
             }
             catch (Exception)
             {

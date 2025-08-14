@@ -1,3 +1,4 @@
+// 这是自动生成的语言文件的完整键和值
 {
   "cultures": {
     "en": {
@@ -8,6 +9,10 @@
         "description": "This is the home page of the application.",
         "welcomeMessage": "Welcome to our application!",
         "footer": "© 2025 Your Company Name. All rights reserved."
+      },
+      "dynamicData": {
+        "Data1": "hello",
+        "Data2": "world"
       }
     }
   }
