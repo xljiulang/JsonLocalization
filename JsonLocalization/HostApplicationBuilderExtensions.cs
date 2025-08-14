@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Globalization;
 using System.IO;
-using System.Threading;
 
 namespace Microsoft.Extensions.Hosting
 {
@@ -61,7 +60,8 @@ namespace Microsoft.Extensions.Hosting
             }
 
             builder.Services.TryAddTransient<IOptionsFactory<TLocale>, LocaleOptionsFactory<TLocale>>();
-            builder.Services.TryAddTransient(s => s.GetRequiredService<IOptionsMonitor<TLocale>>().Get(Thread.CurrentThread.CurrentCulture.Name));
+            builder.Services.TryAddSingleton<ILocalizer<TLocale>, Localizer<TLocale>>();
+            builder.Services.TryAddTransient(s => s.GetRequiredService<ILocalizer<TLocale>>().Current);
 
             builder.Services.TryAddSingleton<LocalePersister<TLocale>>();
             builder.Services.AddHostedService<LocalePersisterService<TLocale>>();
