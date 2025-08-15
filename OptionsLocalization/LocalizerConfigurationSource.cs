@@ -23,19 +23,17 @@ namespace OptionsLocalization
             {
                 base.Load(stream);
 
-                if (this.Source.Path == null)
+                var filePath = this.Source.Path;
+                if (filePath == null)
                 {
                     return;
                 }
 
-                var filePath = System.IO.Path.GetRelativePath(".", this.Source.Path);
-                var keyPath = System.IO.Path.ChangeExtension(filePath, null);
-                if (keyPath == null)
-                {
-                    return;
-                }
+                var culture = System.IO.Path.GetFileNameWithoutExtension(filePath);
+                var optionsPath = System.IO.Path.GetDirectoryName(filePath);
+                var optionsDirName = System.IO.Path.GetFileName(optionsPath);
 
-                var keyPrefix = keyPath.Replace('\\', ':').Replace('/', ':');
+                var keyPrefix = $"{LocalizerOptions.LocalizationPath}:{optionsDirName}:{culture}";
                 this.Data = this.Data.ToDictionary(kv => $"{keyPrefix}:{kv.Key}", kv => kv.Value, StringComparer.OrdinalIgnoreCase);
             }
         }
