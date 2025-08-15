@@ -25,7 +25,7 @@ static void Main(string[] args)
     var builder = WebApplication.CreateBuilder(args);
 
     // 添加本地化工具，默认语言区域为 "en"
-    builder.AddLocalizer<Locale>(defaultCulture: "en");
+    builder.AddLocalizer(defaultCulture: "en").Configure<Locale>();
 
     builder.Services.AddControllers();
     var app = builder.Build();
@@ -67,6 +67,8 @@ public class HomeController
 ```
 
 #### 4 添加语言文件
-1. 新建`cultures`目录，创建`zh.json`、`zh-CN.json`等空白语言文件
-2. 启动运行你的项目
-3. 在`cultures`目录找到相关的`.value`文件，粘贴到对应的`.json`语言文件并翻译修改
+1. 打开到`localizations`目录
+2. 新建`Locale`子目录(目录名与数据类型名保持一致)
+3. 在子目录创建`zh.json`、`zh-CN.json`等空白语言文件
+4. 启动运行你的项目
+5. 在`Locale`子目录找到相关的`.value`文件，粘贴到对应的`.json`语言文件并翻译修改

@@ -14,7 +14,7 @@ namespace WebApp
             var builder = WebApplication.CreateBuilder(args);
 
             // 添加本地化工具，默认语言区域为 "en"
-            builder.AddLocalizer<Locale>(defaultCulture: "en");
+            builder.AddLocalizer(defaultCulture: "en").Configure<Locale>();
 
             builder.Services.AddControllers();
             var app = builder.Build();

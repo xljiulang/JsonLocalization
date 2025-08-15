@@ -1,11 +1,9 @@
 ﻿using JsonLocalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
-using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace Microsoft.Extensions.Hosting
 {
@@ -17,70 +15,63 @@ namespace Microsoft.Extensions.Hosting
         /// <summary>
         /// 添加​本地化工具​      
         /// </summary>
-        /// <typeparam name="TOptions">本地化的数据类型</typeparam>
         /// <param name="builder"></param>
-        /// <param name="defaultCulture">默认语言区域</param>
-        /// <param name="resourcesPath">本地化数据的资源文件目录</param>
+        /// <param name="defaultCulture">默认语言区域</param> 
         /// <returns></returns>
-        public static IHostApplicationBuilder AddLocalizer<TOptions>(this IHostApplicationBuilder builder, string defaultCulture, string resourcesPath = "cultures")
-            where TOptions : class, new()
+        public static ILocalizerBuilder AddLocalizer(this IHostApplicationBuilder builder, string defaultCulture)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(resourcesPath);
-            return builder.AddLocalizer<TOptions>(CultureInfo.GetCultureInfo(defaultCulture), resourcesPath);
+            return builder.AddLocalizer(CultureInfo.GetCultureInfo(defaultCulture));
         }
 
         /// <summary>
         /// 添加​本地化工具​      
-        /// </summary>
-        /// <typeparam name="TOptions">本地化的数据类型</typeparam>
+        /// </summary> 
         /// <param name="builder"></param>
-        /// <param name="defaultCulture">默认语言区域</param>
-        /// <param name="resourcesPath">本地化数据的资源文件目录</param>
+        /// <param name="defaultCulture">默认语言区域</param> 
         /// <returns></returns>
-        public static IHostApplicationBuilder AddLocalizer<TOptions>(this IHostApplicationBuilder builder, CultureInfo defaultCulture, string resourcesPath = "cultures")
-            where TOptions : class, new()
+        public static ILocalizerBuilder AddLocalizer(this IHostApplicationBuilder builder, CultureInfo defaultCulture)
         {
-            // 添加配置文件
-            var jsonFiles = Directory.GetFiles(resourcesPath, "*.json");
-            foreach (var jsonFile in jsonFiles)
-            {
-                builder.Configuration.Add<LocalizerConfigurationSource>(s =>
-                {
-                    s.Path = jsonFile;
-                    s.Optional = true;
-                    s.ReloadOnChange = true;
-                    s.ResolveFileProvider();
-                });
-            }
+            builder.Configuration.AddLocalizer();
+            return builder.Services.AddLocalizer(builder.Configuration, defaultCulture);
+        }
 
+
+        private static void AddLocalizer(this IConfigurationBuilder builder)
+        {
+            Directory.CreateDirectory(LocalizerOptions.LocalizationPath);
+            foreach (var optionsPath in Directory.GetDirectories(LocalizerOptions.LocalizationPath))
+            {
+                var jsonFiles = Directory.GetFiles(optionsPath, "*.json");
+                foreach (var jsonFile in jsonFiles)
+                {
+                    if (builder.Sources.OfType<LocalizerConfigurationSource>().Any(i => i.Path == jsonFile) == false)
+                    {
+                        builder.Add<LocalizerConfigurationSource>(s =>
+                        {
+                            s.Path = jsonFile;
+                            s.Optional = true;
+                            s.ReloadOnChange = true;
+                            s.ResolveFileProvider();
+                        });
+                    }
+                }
+            }
+        }
+
+        private static LocalizerBuilder AddLocalizer(this IServiceCollection services, IConfiguration configuration, CultureInfo defaultCulture)
+        {
             // 配置参数到 LocalizerOptions
-            builder.Services.PostConfigure<LocalizerOptions>(options =>
+            services.PostConfigure<LocalizerOptions>(options =>
             {
                 options.DefaultCulture = defaultCulture;
-                options.ResourcesPath = resourcesPath;
             });
 
-
-            // 配置每个语言区域的本地化数据
-            foreach (var jsonFile in jsonFiles)
+            return new LocalizerBuilder
             {
-                var culture = Path.GetFileNameWithoutExtension(jsonFile);
-                var configuration = builder.Configuration.GetSection($"cultures:{culture}");
-
-                if (culture.Equals(defaultCulture.Name, StringComparison.OrdinalIgnoreCase))
-                {
-                    builder.Services.Configure<TOptions>(configuration);
-                }
-                else
-                {
-                    builder.Services.Configure<TOptions>(culture, configuration);
-                }
-            }
-
-            builder.Services.TryAddTransient<IOptionsFactory<TOptions>, LocalizerFactory<TOptions>>();
-            builder.Services.TryAddSingleton<ILocalizer<TOptions>, Localizer<TOptions>>();
-            builder.Services.TryAddTransient(s => s.GetRequiredService<ILocalizer<TOptions>>().Current);
-            return builder;
+                Services = services,
+                Configuration = configuration,
+                DefaultCulture = defaultCulture,
+            };
         }
     }
 }

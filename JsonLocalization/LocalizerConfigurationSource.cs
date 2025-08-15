@@ -23,9 +23,20 @@ namespace JsonLocalization
             {
                 base.Load(stream);
 
-                // 将语言区域添加到每个键的前缀
-                var culture = System.IO.Path.GetFileNameWithoutExtension(this.Source.Path);
-                this.Data = this.Data.ToDictionary(kv => $"cultures:{culture}:{kv.Key}", kv => kv.Value, StringComparer.OrdinalIgnoreCase);
+                if (this.Source.Path == null)
+                {
+                    return;
+                }
+
+                var filePath = System.IO.Path.GetRelativePath(".", this.Source.Path);
+                var keyPath = System.IO.Path.ChangeExtension(filePath, null);
+                if (keyPath == null)
+                {
+                    return;
+                }
+
+                var keyPrefix = keyPath.Replace('\\', ':').Replace('/', ':');
+                this.Data = this.Data.ToDictionary(kv => $"{keyPrefix}:{kv.Key}", kv => kv.Value, StringComparer.OrdinalIgnoreCase);
             }
         }
     }

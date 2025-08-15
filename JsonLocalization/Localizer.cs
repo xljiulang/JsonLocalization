@@ -30,10 +30,12 @@ namespace JsonLocalization
             this.options = options;
             this.optionsMonitor = optionsMonitor;
 
-            foreach (var jsonFile in Directory.GetFiles(options.Value.ResourcesPath, "*.json"))
+            var optionsPath = LocalizerOptions.GetOptionsPath<TOptions>();
+            foreach (var jsonFile in Directory.GetFiles(optionsPath, "*.json"))
             {
                 var culture = Path.GetFileNameWithoutExtension(jsonFile);
-                this.WriteToValueFile(optionsMonitor.Get(culture), culture);
+                var optionsValue = optionsMonitor.Get(culture);
+                this.WriteToValueFile(optionsValue, culture);
             }
 
             optionsMonitor.OnChange(this.WriteToValueFile);
@@ -60,7 +62,7 @@ namespace JsonLocalization
             try
             {
                 var valueJson = JsonSerializer.SerializeToUtf8Bytes(optionsValue, jsonSerializerOptions);
-                var valueFile = Path.Combine(this.options.Value.ResourcesPath, $"{culture}.json.value");
+                var valueFile = Path.Combine(LocalizerOptions.GetOptionsPath<TOptions>(), $"{culture}.json.value");
                 using var fileStream = File.Create(valueFile);
                 fileStream.Write("// 这是自动生成的语言文件的完整键和值\r\n"u8);
                 fileStream.Write(valueJson);
