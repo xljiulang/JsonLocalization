@@ -1,4 +1,4 @@
-﻿using JsonLocalization;
+﻿using OptionsLocalization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

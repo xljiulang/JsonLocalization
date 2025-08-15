@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
 
-namespace JsonLocalization
+namespace OptionsLocalization
 {
     /// <summary>
     /// 本地化构建器接口

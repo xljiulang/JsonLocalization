@@ -1,4 +1,4 @@
-﻿namespace JsonLocalization
+﻿namespace OptionsLocalization
 {
     /// <summary>
     /// 本地化工具接口

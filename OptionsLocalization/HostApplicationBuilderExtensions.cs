@@ -1,4 +1,4 @@
-﻿using JsonLocalization;
+﻿using OptionsLocalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;

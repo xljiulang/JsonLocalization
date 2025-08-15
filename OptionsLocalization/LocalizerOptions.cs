@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.IO;
 
-namespace JsonLocalization
+namespace OptionsLocalization
 {
     /// <summary>
     /// 本地化选项

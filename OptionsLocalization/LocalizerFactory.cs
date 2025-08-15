@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace JsonLocalization
+namespace OptionsLocalization
 {
     sealed class LocalizerFactory<TOptions> : IOptionsFactory<TOptions>
          where TOptions : class, new()

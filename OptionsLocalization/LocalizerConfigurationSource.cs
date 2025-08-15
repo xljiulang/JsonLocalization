@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace JsonLocalization
+namespace OptionsLocalization
 {
     /// <summary>
     /// 本地化配置源

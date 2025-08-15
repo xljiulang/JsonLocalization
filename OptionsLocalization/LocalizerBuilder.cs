@@ -6,7 +6,7 @@ using System;
 using System.Globalization;
 using System.IO;
 
-namespace JsonLocalization
+namespace OptionsLocalization
 {
     sealed class LocalizerBuilder : ILocalizerBuilder
     {

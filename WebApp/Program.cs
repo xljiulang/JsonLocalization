@@ -1,8 +1,8 @@
-﻿using JsonLocalization;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OptionsLocalization;
 using System.Threading;
 
 namespace WebApp

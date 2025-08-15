@@ -5,7 +5,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading;
 
-namespace JsonLocalization
+namespace OptionsLocalization
 {
     /// <summary>
     /// 本地化工具
