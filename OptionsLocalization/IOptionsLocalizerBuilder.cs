@@ -7,7 +7,7 @@ namespace OptionsLocalization
     /// <summary>
     /// 本地化选项构建器接口
     /// </summary>
-    public interface ILocalizerBuilder
+    public interface IOptionsLocalizerBuilder
     {
         /// <summary>
         /// 获取默认的语言区域
@@ -29,6 +29,6 @@ namespace OptionsLocalization
         /// </summary>
         /// <typeparam name="TOptions">选项类型</typeparam>
         /// <returns></returns>
-        ILocalizerBuilder Configure<TOptions>() where TOptions : class, new();
+        IOptionsLocalizerBuilder Configure<TOptions>() where TOptions : class, new();
     }
 }

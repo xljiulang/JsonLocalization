@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace OptionsLocalization
 {
-    sealed class LocalizerOptions<TOptions>
+    sealed class OptionsLocalizerOptions<TOptions>
     {
         public CultureInfo DefaultCulture { get; set; } = CultureInfo.CurrentCulture;
 

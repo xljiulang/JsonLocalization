@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace OptionsLocalization
 {
-    sealed class LocalizerBuilder : ILocalizerBuilder
+    sealed class OptionsLocalizerBuilder : IOptionsLocalizerBuilder
     {
         public required CultureInfo DefaultCulture { get; init; }
 
@@ -19,14 +19,14 @@ namespace OptionsLocalization
         public required IConfiguration Configuration { get; init; }
 
 
-        public ILocalizerBuilder Configure<TOptions>() where TOptions : class, new()
+        public IOptionsLocalizerBuilder Configure<TOptions>() where TOptions : class, new()
         {
             var optionsPath = FindOptionsPath<TOptions>();
             var optionsCultures = FindOptionsCultures(optionsPath).ToArray();
 
             foreach (var culture in optionsCultures)
             {
-                var key = $"{Localizer.LocalizationRoot}:{typeof(TOptions).Name}:{culture}";
+                var key = $"{OptionsLocalizer.LocalizationRoot}:{typeof(TOptions).Name}:{culture}";
                 var configuration = this.Configuration.GetSection(key);
 
                 if (culture.Equals(this.DefaultCulture.Name, StringComparison.OrdinalIgnoreCase))
@@ -39,29 +39,29 @@ namespace OptionsLocalization
                 }
             }
 
-            this.Services.Configure<LocalizerOptions<TOptions>>(options =>
+            this.Services.Configure<OptionsLocalizerOptions<TOptions>>(options =>
             {
                 options.Cultures = optionsCultures;
                 options.OptionsPath = optionsPath;
                 options.DefaultCulture = this.DefaultCulture;
             });
 
-            this.Services.TryAddTransient<IOptionsFactory<TOptions>, LocalizerFactory<TOptions>>();
-            this.Services.TryAddSingleton<ILocalizer<TOptions>, Localizer<TOptions>>();
-            this.Services.TryAddTransient(s => s.GetRequiredService<ILocalizer<TOptions>>().Current);
+            this.Services.TryAddTransient<IOptionsFactory<TOptions>, CultureOptionsFactory<TOptions>>();
+            this.Services.TryAddSingleton<IOptionsLocalizer<TOptions>, OptionsLocalizer<TOptions>>();
+            this.Services.TryAddTransient(s => s.GetRequiredService<IOptionsLocalizer<TOptions>>().Current);
             return this;
         }
 
 
         private static string FindOptionsPath<TOptions>()
         {
-            var optionsPath = Path.Combine(Localizer.LocalizationRoot, typeof(TOptions).Name);
+            var optionsPath = Path.Combine(OptionsLocalizer.LocalizationRoot, typeof(TOptions).Name);
             if (Path.Exists(optionsPath))
             {
                 return optionsPath;
             }
 
-            foreach (var path in Directory.GetDirectories(Localizer.LocalizationRoot))
+            foreach (var path in Directory.GetDirectories(OptionsLocalizer.LocalizationRoot))
             {
                 var optionsDirName = Path.GetFileName(path);
                 if (typeof(TOptions).Name.Equals(optionsDirName, StringComparison.OrdinalIgnoreCase))

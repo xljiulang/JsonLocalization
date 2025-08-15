@@ -8,7 +8,7 @@ namespace OptionsLocalization
     /// <summary>
     /// 本地化选项工具
     /// </summary>
-    public class Localizer
+    public static class OptionsLocalizer
     {
         private static string root = "localizations";
 
@@ -52,18 +52,24 @@ namespace OptionsLocalization
         {
             if (string.IsNullOrEmpty(culture))
             {
-                Thread.CurrentThread.CurrentCulture = fallback;
+                SetCurrentThreadCulture(fallback);
                 return;
             }
 
             try
             {
-                Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(culture);
+                SetCurrentThreadCulture(CultureInfo.GetCultureInfo(culture));
             }
             catch (Exception)
             {
-                Thread.CurrentThread.CurrentCulture = fallback;
+                SetCurrentThreadCulture(fallback);
             }
-        } 
+        }
+
+        private static void SetCurrentThreadCulture(CultureInfo culture)
+        {
+            Thread.CurrentThread.CurrentCulture = culture;
+            Thread.CurrentThread.CurrentUICulture = culture;
+        }
     }
 }

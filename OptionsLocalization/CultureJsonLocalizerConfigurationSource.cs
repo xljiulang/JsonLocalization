@@ -9,7 +9,7 @@ namespace OptionsLocalization
     /// <summary>
     /// 本地化配置源
     /// </summary>
-    sealed class LocalizerConfigurationSource : JsonConfigurationSource
+    sealed class CultureJsonLocalizerConfigurationSource : JsonConfigurationSource
     {
         public override IConfigurationProvider Build(IConfigurationBuilder builder)
         {
@@ -17,7 +17,7 @@ namespace OptionsLocalization
             return new LocalizerConfigurationProvider(this);
         }
 
-        private class LocalizerConfigurationProvider(LocalizerConfigurationSource source) : JsonConfigurationProvider(source)
+        private class LocalizerConfigurationProvider(CultureJsonLocalizerConfigurationSource source) : JsonConfigurationProvider(source)
         {
             public override void Load(Stream stream)
             {
@@ -33,7 +33,7 @@ namespace OptionsLocalization
                 var optionsPath = System.IO.Path.GetDirectoryName(filePath);
                 var optionsDirName = System.IO.Path.GetFileName(optionsPath);
 
-                var keyPrefix = $"{Localizer.LocalizationRoot}:{optionsDirName}:{culture}";
+                var keyPrefix = $"{OptionsLocalizer.LocalizationRoot}:{optionsDirName}:{culture}";
                 this.Data = this.Data.ToDictionary(kv => $"{keyPrefix}:{kv.Key}", kv => kv.Value, StringComparer.OrdinalIgnoreCase);
             }
         }

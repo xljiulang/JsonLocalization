@@ -4,22 +4,21 @@ using System.Linq;
 
 namespace OptionsLocalization
 {
-    sealed class LocalizerFactory<TOptions> : IOptionsFactory<TOptions>
+    sealed class CultureOptionsFactory<TOptions> : IOptionsFactory<TOptions>
          where TOptions : class, new()
     {
         private readonly IConfigureOptions<TOptions>[] _setups;
         private readonly IPostConfigureOptions<TOptions>[] _postConfigures;
         private readonly IValidateOptions<TOptions>[] _validations;
 
-
-        public LocalizerFactory(IEnumerable<IConfigureOptions<TOptions>> setups, IEnumerable<IPostConfigureOptions<TOptions>> postConfigures, IEnumerable<IValidateOptions<TOptions>> validations)
+        public CultureOptionsFactory(IEnumerable<IConfigureOptions<TOptions>> setups, IEnumerable<IPostConfigureOptions<TOptions>> postConfigures, IEnumerable<IValidateOptions<TOptions>> validations)
         {
             _setups = setups as IConfigureOptions<TOptions>[] ?? setups.ToArray();
             _postConfigures = postConfigures as IPostConfigureOptions<TOptions>[] ?? postConfigures.ToArray();
             _validations = validations as IValidateOptions<TOptions>[] ?? validations.ToArray();
         }
 
-      
+
         public TOptions Create(string name)
         {
             var defaultOptions = this.CreateOptions(Options.DefaultName, default);
@@ -48,7 +47,7 @@ namespace OptionsLocalization
             return options;
         }
 
-     
+
         private TOptions CreateOptions(string name, TOptions? options)
         {
             if (options == null)

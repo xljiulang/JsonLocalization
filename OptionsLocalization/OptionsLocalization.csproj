@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>1.0.0-beta2</Version>
+		<Version>1.0.0-beta3</Version>
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -9,7 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Include="LocalizerOptions.cs" />
+		<None Include="OptionsLocalizerOptions.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

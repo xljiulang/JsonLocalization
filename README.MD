@@ -24,10 +24,10 @@ static void Main(string[] args)
 {
     var builder = WebApplication.CreateBuilder(args);
 
-    // Localizer.LocalizationRoot = "localizations";
+    // OptionsLocalizer.LocalizationRoot = "localizations";
 
     // 添加本地化工具，默认语言区域为 "en"
-    builder.AddLocalizer(defaultCulture: "en").Configure<AppOptions>();
+    builder.AddOptionsLocalizer(defaultCulture: "en").Configure<AppOptions>();
 
     builder.Services.AddControllers();
     var app = builder.Build();
@@ -36,7 +36,7 @@ static void Main(string[] args)
     app.Use(next => context =>
     {
         context.Request.Query.TryGetValue("culture", out var culture);
-        Localizer.SetCurrentThreadCulture(culture, "zh");
+        OptionsLocalizer.SetCurrentThreadCulture(culture, "zh");
         return next(context);
     });
 
@@ -59,7 +59,7 @@ public class HomeController
     [HttpGet("/")]
     public Locale Index(
         [FromServices] AppOptions appOptions,
-        [FromServices] ILocalizer<AppOptions> localizer)
+        [FromServices] IOptionsLocalizer<AppOptions> localizer)
     {
         Debug.Assert(appOptions == localizer.Current);
         return locale;

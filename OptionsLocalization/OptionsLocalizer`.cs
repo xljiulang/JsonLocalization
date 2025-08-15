@@ -7,9 +7,9 @@ using System.Threading;
 
 namespace OptionsLocalization
 {
-    sealed class Localizer<TOptions> : Localizer, ILocalizer<TOptions>
+    sealed class OptionsLocalizer<TOptions> :  IOptionsLocalizer<TOptions>
     {
-        private readonly IOptions<LocalizerOptions<TOptions>> options;
+        private readonly IOptions<OptionsLocalizerOptions<TOptions>> options;
         private readonly IOptionsMonitor<TOptions> optionsMonitor;
         private static readonly JsonSerializerOptions jsonSerializerOptions = new()
         {
@@ -21,8 +21,8 @@ namespace OptionsLocalization
         public TOptions Current => this.Get(Thread.CurrentThread.CurrentCulture.Name);
 
 
-        public Localizer(
-            IOptions<LocalizerOptions<TOptions>> options,
+        public OptionsLocalizer(
+            IOptions<OptionsLocalizerOptions<TOptions>> options,
             IOptionsMonitor<TOptions> optionsMonitor)
         {
             this.options = options;

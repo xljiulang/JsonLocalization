@@ -4,7 +4,7 @@
     /// 本地化选项工具接口
     /// </summary>
     /// <typeparam name="TOptions">本地化选项类型</typeparam>
-    public interface ILocalizer<out TOptions>
+    public interface IOptionsLocalizer<out TOptions>
     {
         /// <summary>
         /// 获取当前线程的语言区域对应的本地化选项
