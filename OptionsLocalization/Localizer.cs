@@ -1,74 +1,33 @@
-﻿using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.IO;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Threading;
 
 namespace OptionsLocalization
 {
     /// <summary>
-    /// 本地化工具
+    /// 本地化选项工具
     /// </summary>
-    /// <typeparam name="TOptions">本地化数据</typeparam>
-    sealed class Localizer<TOptions> : ILocalizer<TOptions>
+    public class Localizer
     {
-        private readonly IOptions<LocalizerOptions> options;
-        private readonly IOptionsMonitor<TOptions> optionsMonitor;
-        private static readonly JsonSerializerOptions jsonSerializerOptions = new()
-        {
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-        };
-
-        public TOptions Current => this.Get(Thread.CurrentThread.CurrentCulture.Name);
-
-
-        public Localizer(IOptions<LocalizerOptions> options, IOptionsMonitor<TOptions> optionsMonitor)
-        {
-            this.options = options;
-            this.optionsMonitor = optionsMonitor;
-
-            var optionsPath = LocalizerOptions.GetOptionsPath<TOptions>();
-            foreach (var jsonFile in Directory.GetFiles(optionsPath, "*.json"))
-            {
-                var culture = Path.GetFileNameWithoutExtension(jsonFile);
-                var optionsValue = optionsMonitor.Get(culture);
-                this.WriteToValueFile(optionsValue, culture);
-            }
-
-            optionsMonitor.OnChange(this.WriteToValueFile);
-        }
-
-
-        public TOptions Get(string culture)
-        {
-            return this.optionsMonitor.Get(culture);
-        }
+        private static string root = "localizations";
 
         /// <summary>
-        /// 保存资源到 .value 文件
+        /// 获取或设置本地化选项的资源文件根目录
+        /// 默认为 localizations
         /// </summary>
-        /// <param name="optionsValue"></param>
-        /// <param name="culture"></param>
-        private void WriteToValueFile(TOptions optionsValue, string? culture)
+        public static string LocalizationRoot
         {
-            if (string.IsNullOrEmpty(culture))
+            get
             {
-                culture = this.options.Value.DefaultCulture.Name;
+                Directory.CreateDirectory(root);
+                return root;
             }
-
-            try
+            set
             {
-                var valueJson = JsonSerializer.SerializeToUtf8Bytes(optionsValue, jsonSerializerOptions);
-                var valueFile = Path.Combine(LocalizerOptions.GetOptionsPath<TOptions>(), $"{culture}.json.value");
-                using var fileStream = File.Create(valueFile);
-                fileStream.Write("// 这是自动生成的语言文件的完整键和值\r\n"u8);
-                fileStream.Write(valueJson);
-            }
-            catch (Exception)
-            {
+                if (Path.GetDirectoryName(value.AsSpan()).Length > 0)
+                {
+                    throw new ArgumentException(value);
+                }
+                root = value;
             }
         }
     }

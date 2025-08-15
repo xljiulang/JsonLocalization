@@ -33,7 +33,7 @@ namespace OptionsLocalization
                 var optionsPath = System.IO.Path.GetDirectoryName(filePath);
                 var optionsDirName = System.IO.Path.GetFileName(optionsPath);
 
-                var keyPrefix = $"{LocalizerOptions.LocalizationPath}:{optionsDirName}:{culture}";
+                var keyPrefix = $"{Localizer.LocalizationRoot}:{optionsDirName}:{culture}";
                 this.Data = this.Data.ToDictionary(kv => $"{keyPrefix}:{kv.Key}", kv => kv.Value, StringComparer.OrdinalIgnoreCase);
             }
         }

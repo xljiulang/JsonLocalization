@@ -5,7 +5,7 @@ using System.Globalization;
 namespace OptionsLocalization
 {
     /// <summary>
-    /// 本地化构建器接口
+    /// 本地化选项构建器接口
     /// </summary>
     public interface ILocalizerBuilder
     {
@@ -25,7 +25,7 @@ namespace OptionsLocalization
         IConfiguration Configuration { get; }
 
         /// <summary>
-        /// 配置本地化数据到指定的选项类
+        /// 绑定配置到到指定的选项类型
         /// </summary>
         /// <typeparam name="TOptions">选项类型</typeparam>
         /// <returns></returns>

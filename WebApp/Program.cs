@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using OptionsLocalization;
+using System;
+using System.Globalization;
 using System.Threading;
 using WebApp.Controllers;
 
@@ -13,6 +13,8 @@ namespace WebApp
         static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Localizer.LocalizationRoot = "localizations";
 
             // 添加本地化工具，默认语言区域为 "en"
             builder.AddLocalizer(defaultCulture: "en")
@@ -26,13 +28,29 @@ namespace WebApp
             app.Use(next => context =>
             {
                 context.Request.Query.TryGetValue("culture", out var culture);
-                var options = context.RequestServices.GetRequiredService<IOptions<LocalizerOptions>>();
-                Thread.CurrentThread.CurrentCulture = options.Value.GetCulture(culture);
+                Thread.CurrentThread.CurrentCulture = GetCulture(culture, CultureInfo.GetCultureInfo("en"));
                 return next(context);
             });
 
             app.MapControllers();
             app.Run();
+        }
+
+        private static CultureInfo GetCulture(string? culture, CultureInfo fallback)
+        {
+            if (string.IsNullOrEmpty(culture))
+            {
+                return fallback;
+            }
+
+            try
+            {
+                return CultureInfo.GetCultureInfo(culture);
+            }
+            catch (Exception)
+            {
+                return fallback;
+            }
         }
     }
 }

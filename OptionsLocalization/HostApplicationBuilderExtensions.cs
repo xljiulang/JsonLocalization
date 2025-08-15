@@ -1,6 +1,6 @@
-﻿using OptionsLocalization;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OptionsLocalization;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -13,10 +13,10 @@ namespace Microsoft.Extensions.Hosting
     public static class HostApplicationBuilderExtensions
     {
         /// <summary>
-        /// 添加​本地化工具​      
+        /// 添加​本地化选项工具​
         /// </summary>
         /// <param name="builder"></param>
-        /// <param name="defaultCulture">默认语言区域</param> 
+        /// <param name="defaultCulture">缺省时使用的语言区域</param> 
         /// <returns></returns>
         public static ILocalizerBuilder AddLocalizer(this IHostApplicationBuilder builder, string defaultCulture)
         {
@@ -24,10 +24,10 @@ namespace Microsoft.Extensions.Hosting
         }
 
         /// <summary>
-        /// 添加​本地化工具​      
+        /// 添加​本地化选项工具​
         /// </summary> 
         /// <param name="builder"></param>
-        /// <param name="defaultCulture">默认语言区域</param> 
+        /// <param name="defaultCulture">缺省时使用的语言区域</param> 
         /// <returns></returns>
         public static ILocalizerBuilder AddLocalizer(this IHostApplicationBuilder builder, CultureInfo defaultCulture)
         {
@@ -35,14 +35,11 @@ namespace Microsoft.Extensions.Hosting
             return builder.Services.AddLocalizer(builder.Configuration, defaultCulture);
         }
 
-
         private static void AddLocalizer(this IConfigurationBuilder builder)
         {
-            Directory.CreateDirectory(LocalizerOptions.LocalizationPath);
-            foreach (var optionsPath in Directory.GetDirectories(LocalizerOptions.LocalizationPath))
+            foreach (var optionsPath in Directory.GetDirectories(Localizer.LocalizationRoot))
             {
-                var jsonFiles = Directory.GetFiles(optionsPath, "*.json");
-                foreach (var jsonFile in jsonFiles)
+                foreach (var jsonFile in Directory.GetFiles(optionsPath, "*.json"))
                 {
                     if (builder.Sources.OfType<LocalizerConfigurationSource>().Any(i => i.Path == jsonFile) == false)
                     {
@@ -60,12 +57,6 @@ namespace Microsoft.Extensions.Hosting
 
         private static LocalizerBuilder AddLocalizer(this IServiceCollection services, IConfiguration configuration, CultureInfo defaultCulture)
         {
-            // 配置参数到 LocalizerOptions
-            services.PostConfigure<LocalizerOptions>(options =>
-            {
-                options.DefaultCulture = defaultCulture;
-            });
-
             return new LocalizerBuilder
             {
                 Services = services,
