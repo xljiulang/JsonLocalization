@@ -12,7 +12,7 @@ namespace OptionsLocalization
         /// <summary>
         /// 获取当前线程的语言区域对应的本地化选项
         /// </summary>
-        TOptions Current { get; }
+        TOptions CurrentValue { get; }
 
         /// <summary>
         /// 选项的缺省语言区域

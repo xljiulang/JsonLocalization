@@ -19,7 +19,7 @@ namespace WebApp.Controllers
             [FromServices] HomeOptions homeOptions,
             [FromServices] IOptionsLocalizer<HomeOptions> localizer)
         {
-            Debug.Assert(homeOptions == localizer.Current);
+            Debug.Assert(homeOptions == localizer.CurrentValue);
             return homeOptions;
         }
     }

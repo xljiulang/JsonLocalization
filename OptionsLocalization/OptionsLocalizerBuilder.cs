@@ -48,7 +48,7 @@ namespace OptionsLocalization
 
             this.Services.TryAddTransient<IOptionsFactory<TOptions>, CultureOptionsFactory<TOptions>>();
             this.Services.TryAddSingleton<IOptionsLocalizer<TOptions>, OptionsLocalizer<TOptions>>();
-            this.Services.TryAddTransient(s => s.GetRequiredService<IOptionsLocalizer<TOptions>>().Current);
+            this.Services.TryAddTransient(s => s.GetRequiredService<IOptionsLocalizer<TOptions>>().CurrentValue);
             return this;
         }
 

@@ -20,7 +20,7 @@ namespace OptionsLocalization
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
 
-        public TOptions Current => this.Get(Thread.CurrentThread.CurrentCulture.Name);
+        public TOptions CurrentValue => this.Get(Thread.CurrentThread.CurrentCulture.Name);
 
         public CultureInfo DefaultCulture => this.options.Value.DefaultCulture;
 
