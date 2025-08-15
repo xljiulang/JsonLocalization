@@ -69,6 +69,6 @@ public class HomeController
 #### 4 添加语言文件
 1. 打开到`localizations`目录
 2. 新建`Locale`子目录(目录名与数据类型名保持一致)
-3. 在子目录创建`zh.json`、`zh-CN.json`等空白语言文件
+3. 在子目录创建`zh.json`、`zh-CN.json`等包含`{}`内容的语言文件
 4. 启动运行你的项目
 5. 在`Locale`子目录找到相关的`.value`文件，粘贴到对应的`.json`语言文件并翻译修改

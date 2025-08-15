@@ -1,6 +1,6 @@
 ﻿namespace WebApp.Controllers
 {
-    public class HomeLocale
+    public class HomeOptions
     {
         public string Title { get; set; } = "Home Page";
         public string Description { get; set; } = "This is the home page of the application.";

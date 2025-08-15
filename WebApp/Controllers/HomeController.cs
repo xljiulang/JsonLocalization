@@ -1,5 +1,5 @@
-﻿using OptionsLocalization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using OptionsLocalization;
 using System.Diagnostics;
 
 namespace WebApp.Controllers
@@ -9,16 +9,18 @@ namespace WebApp.Controllers
         /// <summary>
         /// 本地化工具示例
         /// </summary>
-        /// <param name="locale">当前线程对应的本地化数据</param>
-        /// <param name="localizer">本地化工具</param>
+        /// <param name="appOptions"></param>
+        /// <param name="homeOptions"></param>
+        /// <param name="localizer"></param>
         /// <returns></returns>
         [HttpGet("/")]
-        public Locale Index(
-            [FromServices] Locale locale,
-            [FromServices] ILocalizer<Locale> localizer)
+        public HomeOptions Index(
+            [FromServices] AppOptions appOptions,
+            [FromServices] HomeOptions homeOptions,
+            [FromServices] ILocalizer<HomeOptions> localizer)
         {
-            Debug.Assert(locale == localizer.Current);
-            return locale;
+            Debug.Assert(homeOptions == localizer.Current);
+            return homeOptions;
         }
     }
 }
