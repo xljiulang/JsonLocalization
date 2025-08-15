@@ -1,4 +1,7 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace OptionsLocalization
 {
@@ -8,6 +11,6 @@ namespace OptionsLocalization
 
         public string OptionsPath { get; set; } = string.Empty;
 
-        public string[] Cultures { get; set; } = [];
+        public ReadOnlyCollection<string> Cultures { get; set; } = Array.Empty<string>().AsReadOnly();
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using System;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -7,7 +9,7 @@ using System.Threading;
 
 namespace OptionsLocalization
 {
-    sealed class OptionsLocalizer<TOptions> :  IOptionsLocalizer<TOptions>
+    sealed class OptionsLocalizer<TOptions> : IOptionsLocalizer<TOptions>
     {
         private readonly IOptions<OptionsLocalizerOptions<TOptions>> options;
         private readonly IOptionsMonitor<TOptions> optionsMonitor;
@@ -20,6 +22,9 @@ namespace OptionsLocalization
 
         public TOptions Current => this.Get(Thread.CurrentThread.CurrentCulture.Name);
 
+        public CultureInfo DefaultCulture => this.options.Value.DefaultCulture;
+
+        public ReadOnlyCollection<string> SupportedCultures => this.options.Value.Cultures;
 
         public OptionsLocalizer(
             IOptions<OptionsLocalizerOptions<TOptions>> options,
