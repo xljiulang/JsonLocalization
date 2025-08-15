@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Globalization;
-using System.Threading;
+using OptionsLocalization;
 using WebApp.Controllers;
 
 namespace WebApp
@@ -28,29 +26,12 @@ namespace WebApp
             app.Use(next => context =>
             {
                 context.Request.Query.TryGetValue("culture", out var culture);
-                Thread.CurrentThread.CurrentCulture = GetCulture(culture, CultureInfo.GetCultureInfo("en"));
+                Localizer.SetCurrentThreadCulture(culture, "zh");
                 return next(context);
             });
 
             app.MapControllers();
             app.Run();
-        }
-
-        private static CultureInfo GetCulture(string? culture, CultureInfo fallback)
-        {
-            if (string.IsNullOrEmpty(culture))
-            {
-                return fallback;
-            }
-
-            try
-            {
-                return CultureInfo.GetCultureInfo(culture);
-            }
-            catch (Exception)
-            {
-                return fallback;
-            }
         }
     }
 }

@@ -34,8 +34,7 @@ static void Main(string[] args)
     app.Use(next => context =>
     {
         context.Request.Query.TryGetValue("culture", out var culture);
-        var options = context.RequestServices.GetRequiredService<IOptions<LocalizerOptions>>();
-        Thread.CurrentThread.CurrentCulture = options.Value.GetCulture(culture);
+        Localizer.SetCurrentThreadCulture(culture, "zh");
         return next(context);
     });
 
