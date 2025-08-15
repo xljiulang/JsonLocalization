@@ -1,5 +1,5 @@
 ## OptionsLocalization
-小有意思的一个项目，使用json配置文件 + Options 取代资源文件做本地化
+小有意思的一个项目，使用 json 配置文件做 [Options](https://learn.microsoft.com/zh-cn/dotnet/core/extensions/options) 本地化
 
 ### 使用步骤
 #### 1 定义你的选项
