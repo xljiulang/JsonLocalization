@@ -39,7 +39,7 @@ namespace OptionsLocalization
                 this.WriteToValueFile(optionsValue, culture);
             }
 
-            optionsMonitor.OnChange(this.WriteToValueFile);
+            this.OnChange(WriteToValueFile);
         }
 
         public TOptions Get(string culture)
@@ -48,11 +48,31 @@ namespace OptionsLocalization
         }
 
         /// <summary>
+        /// 监听选项变化
+        /// </summary>
+        /// <param name="listener"></param>
+        /// <returns></returns>
+        public IDisposable? OnChange(Action<TOptions, string> listener)
+        {
+            return this.optionsMonitor.OnChange(OnChange);
+            void OnChange(TOptions optionsValue, string? name)
+            {
+                var culture = name;
+                if (string.IsNullOrEmpty(culture))
+                {
+                    culture = this.options.Value.DefaultCulture.Name;
+                }
+
+                listener(optionsValue, culture);
+            }
+        }
+
+        /// <summary>
         /// 保存资源到 .value 文件
         /// </summary>
         /// <param name="optionsValue"></param>
         /// <param name="culture"></param>
-        private void WriteToValueFile(TOptions optionsValue, string? culture)
+        private void WriteToValueFile(TOptions optionsValue, string culture)
         {
             var optionsPath = options.Value.OptionsPath;
             if (Directory.Exists(optionsPath) == false)
@@ -60,15 +80,10 @@ namespace OptionsLocalization
                 return;
             }
 
-            if (string.IsNullOrEmpty(culture))
-            {
-                culture = this.options.Value.DefaultCulture.Name;
-            }
-
             try
             {
-                var valueFile = Path.Combine(optionsPath, $"{culture}.json.value");
-                using var fileStream = File.Create(valueFile);
+                var valueFilePath = Path.Combine(optionsPath, $"{culture}.json.value");
+                using var fileStream = File.Create(valueFilePath);
                 var valueJson = JsonSerializer.SerializeToUtf8Bytes(optionsValue, jsonSerializerOptions);
                 fileStream.Write("// 这是自动生成的语言文件的完整键和值\r\n"u8);
                 fileStream.Write(valueJson);

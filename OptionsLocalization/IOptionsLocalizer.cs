@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
 
 namespace OptionsLocalization
@@ -30,5 +31,12 @@ namespace OptionsLocalization
         /// <param name="culture">指定语言区域名称</param>
         /// <returns></returns>
         TOptions Get(string culture);
+
+        /// <summary>
+        /// 监听选项变化
+        /// </summary>
+        /// <param name="listener">监听器</param>
+        /// <returns></returns>
+        IDisposable? OnChange(Action<TOptions, string> listener);
     }
 }
