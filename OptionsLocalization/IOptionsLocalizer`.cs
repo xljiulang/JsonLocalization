@@ -32,6 +32,13 @@ namespace OptionsLocalization
         TOptions Get(string culture);
 
         /// <summary>
+        /// 获取指定语言区域的本地化选项
+        /// </summary>
+        /// <param name="culture">指定语言区域名称</param>
+        /// <returns></returns>
+        TOptions Get(CultureInfo culture);
+
+        /// <summary>
         /// 监听选项变化
         /// </summary>
         /// <param name="listener">监听器</param>

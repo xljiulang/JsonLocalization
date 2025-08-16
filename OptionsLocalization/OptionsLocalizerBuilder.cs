@@ -38,15 +38,8 @@ namespace OptionsLocalization
             {
                 var key = $"{this.localizationRoot}:{typeof(TOptions).Name}:{culture}";
                 var configuration = this.configuration.GetSection(key);
-
-                if (culture.Equals(this.defaultCulture.Name, StringComparison.OrdinalIgnoreCase))
-                {
-                    this.services.Configure<TOptions>(configuration);
-                }
-                else
-                {
-                    this.services.Configure<TOptions>(culture, configuration);
-                }
+                var optionsName = culture.Equals(this.defaultCulture.Name, StringComparison.OrdinalIgnoreCase) ? Options.DefaultName : culture;
+                this.services.AddOptions<TOptions>(optionsName).Bind(configuration);
             }
 
             this.services.Configure<OptionsLocalizerOptions<TOptions>>(options =>

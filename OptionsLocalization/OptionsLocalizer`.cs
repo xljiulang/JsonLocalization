@@ -20,7 +20,7 @@ namespace OptionsLocalization
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
 
-        public TOptions CurrentValue => this.Get(Thread.CurrentThread.CurrentCulture.Name);
+        public TOptions CurrentValue => this.Get(Thread.CurrentThread.CurrentCulture);
 
         public CultureInfo DefaultCulture => this.options.Value.DefaultCulture;
 
@@ -38,7 +38,12 @@ namespace OptionsLocalization
 
         public TOptions Get(string culture)
         {
-            return this.optionsMonitor.Get(culture);
+            return this.Get(CultureInfo.GetCultureInfo(culture));
+        }
+
+        public TOptions Get(CultureInfo culture)
+        {
+            return this.optionsMonitor.Get(culture.Name);
         }
 
         /// <summary>

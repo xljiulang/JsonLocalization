@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace OptionsLocalization
@@ -27,21 +29,20 @@ namespace OptionsLocalization
                 return defaultOptions;
             }
 
-            int index;
-            var culture = name;
-            var stack = new Stack<string>();
-            stack.Push(culture);
+            var culture = CultureInfo.GetCultureInfo(name);
+            var cultureStack = new Stack<CultureInfo>();
 
-            while ((index = culture.LastIndexOf('-')) >= 0)
+            cultureStack.Push(culture);
+            while (culture.Parent.Name.AsSpan().Length > 0)
             {
-                culture = culture[..index];
-                stack.Push(culture);
+                culture = culture.Parent;
+                cultureStack.Push(culture);
             }
 
             var options = defaultOptions;
-            while (stack.TryPop(out var next))
+            while (cultureStack.TryPop(out var next))
             {
-                options = this.CreateOptions(next, options);
+                options = this.CreateOptions(next.Name, options);
             }
 
             return options;
