@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 
 namespace OptionsLocalization
@@ -9,8 +8,8 @@ namespace OptionsLocalization
     {
         public CultureInfo DefaultCulture { get; set; } = CultureInfo.CurrentCulture;
 
-        public string? OptionsPath { get; set; } 
+        public HashSet<string> Cultures { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        public ReadOnlyCollection<string> Cultures { get; set; } = Array.Empty<string>().AsReadOnly();
+        public HashSet<string> OptionsPaths { get; } = [];
     }
 }

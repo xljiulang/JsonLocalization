@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
 using System;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading;
@@ -24,7 +24,7 @@ namespace OptionsLocalization
 
         public CultureInfo DefaultCulture => this.options.Value.DefaultCulture;
 
-        public ReadOnlyCollection<string> SupportedCultures => this.options.Value.Cultures;
+        public string[] SupportedCultures => this.options.Value.Cultures.ToArray();
 
         public OptionsLocalizer(
             IOptions<OptionsLocalizerOptions<TOptions>> options,
@@ -77,22 +77,30 @@ namespace OptionsLocalization
         /// <param name="culture"></param>
         private void WriteToValueFile(TOptions optionsValue, string culture)
         {
-            var optionsPath = options.Value.OptionsPath;
-            if (Directory.Exists(optionsPath) == false)
+            var optionsPaths = this.options.Value.OptionsPaths;
+            if (optionsPaths.Count == 0)
             {
                 return;
             }
 
-            try
+            var valueJson = JsonSerializer.SerializeToUtf8Bytes(optionsValue, jsonSerializerOptions);
+            foreach (var optionsPath in optionsPaths)
             {
-                var valueFilePath = Path.Combine(optionsPath, $"{culture}.json.value");
-                using var valueFileStream = File.Create(valueFilePath);
-                var valueJson = JsonSerializer.SerializeToUtf8Bytes(optionsValue, jsonSerializerOptions);
-                valueFileStream.Write("// 这是自动生成的完整语言文件内容，删除或修改此文件对应用没有影响\r\n"u8);
-                valueFileStream.Write(valueJson);
-            }
-            catch (Exception)
-            {
+                var jsonFilePath = Path.Combine(optionsPath, $"{culture}.json");
+                if (File.Exists(jsonFilePath) == false)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    using var valueFileStream = File.Create($"{jsonFilePath}.value");
+                    valueFileStream.Write("// 这是自动生成的完整语言文件内容，删除或修改此文件对应用没有影响\r\n"u8);
+                    valueFileStream.Write(valueJson);
+                }
+                catch (Exception)
+                {
+                }
             }
         }
     }

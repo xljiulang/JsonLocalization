@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Globalization;
 
 namespace OptionsLocalization
@@ -23,7 +22,7 @@ namespace OptionsLocalization
         /// <summary>
         /// 获取选项已支持的语言区域
         /// </summary>
-        ReadOnlyCollection<string> SupportedCultures { get; }
+        string[] SupportedCultures { get; }
 
         /// <summary>
         /// 获取指定语言区域的本地化选项

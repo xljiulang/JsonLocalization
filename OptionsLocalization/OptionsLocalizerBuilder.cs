@@ -51,9 +51,17 @@ namespace OptionsLocalization
 
             this.services.Configure<OptionsLocalizerOptions<TOptions>>(options =>
             {
-                options.Cultures = optionsCultures;
-                options.OptionsPath = optionsPath;
                 options.DefaultCulture = this.defaultCulture;
+
+                foreach (var culture in optionsCultures)
+                {
+                    options.Cultures.Add(culture);
+                }
+
+                if (optionsPath != null)
+                {
+                    options.OptionsPaths.Add(optionsPath);
+                }
             });
 
             this.services.TryAddTransient<IOptionsFactory<TOptions>, CultureOptionsFactory<TOptions>>();
