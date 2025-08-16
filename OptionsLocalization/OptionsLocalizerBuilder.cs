@@ -31,9 +31,25 @@ namespace OptionsLocalization
 
         public IOptionsLocalizerBuilder Configure<TOptions>() where TOptions : class, new()
         {
-            var optionsPath = FindOptionsPath<TOptions>();
-            var optionsCultures = FindOptionsCultures(optionsPath).ToArray();
+            this.services.TryAddTransient<IOptionsFactory<TOptions>, CultureOptionsFactory<TOptions>>();
+            this.services.TryAddSingleton<OptionsLocalizer<TOptions>>();
+            this.services.TryAddSingleton<IOptionsLocalizer<TOptions>>(s => s.GetRequiredService<OptionsLocalizer<TOptions>>());
+            this.services.TryAddTransient(s => s.GetRequiredService<OptionsLocalizer<TOptions>>().CurrentValue);
+            this.services.AddSingleton<IOptionsLocalizer>(s => s.GetRequiredService<OptionsLocalizer<TOptions>>());
+            this.services.AddHostedService<OptionsLocalizerHostedService>();
 
+            this.services.Configure<OptionsLocalizerOptions<TOptions>>(options =>
+            {
+                options.DefaultCulture = this.defaultCulture;
+            });
+
+            var optionsPath = FindOptionsPath<TOptions>();
+            if (optionsPath == null)
+            {
+                return this;
+            }
+
+            var optionsCultures = FindOptionsCultures(optionsPath).ToArray();
             foreach (var culture in optionsCultures)
             {
                 var key = $"{this.localizationRoot}:{typeof(TOptions).Name}:{culture}";
@@ -44,25 +60,19 @@ namespace OptionsLocalization
 
             this.services.Configure<OptionsLocalizerOptions<TOptions>>(options =>
             {
-                options.DefaultCulture = this.defaultCulture;
-
                 foreach (var culture in optionsCultures)
                 {
-                    options.SupportedCultures.Add(culture);
-                }
-
-                if (optionsPath != null)
-                {
-                    options.OptionsPaths.Add(optionsPath);
+                    if (options.SupportedCultures.TryGetValue(culture, out var optionsPaths))
+                    {
+                        optionsPaths.Add(optionsPath);
+                    }
+                    else
+                    {
+                        options.SupportedCultures.TryAdd(culture, [optionsPath]);
+                    }
                 }
             });
 
-            this.services.TryAddTransient<IOptionsFactory<TOptions>, CultureOptionsFactory<TOptions>>();
-            this.services.TryAddSingleton<OptionsLocalizer<TOptions>>();
-            this.services.TryAddSingleton<IOptionsLocalizer<TOptions>>(s => s.GetRequiredService<OptionsLocalizer<TOptions>>());
-            this.services.TryAddTransient(s => s.GetRequiredService<OptionsLocalizer<TOptions>>().CurrentValue);
-            this.services.AddSingleton<IOptionsLocalizer>(s => s.GetRequiredService<OptionsLocalizer<TOptions>>());
-            this.services.AddHostedService<OptionsLocalizerHostedService>();
             return this;
         }
 
@@ -89,7 +99,7 @@ namespace OptionsLocalization
         }
 
 
-        private static IEnumerable<CultureInfo> FindOptionsCultures(string? optionsPath)
+        private static IEnumerable<CultureInfo> FindOptionsCultures(string optionsPath)
         {
             if (Directory.Exists(optionsPath))
             {
