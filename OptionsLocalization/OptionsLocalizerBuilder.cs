@@ -38,7 +38,7 @@ namespace OptionsLocalization
             {
                 var key = $"{this.localizationRoot}:{typeof(TOptions).Name}:{culture}";
                 var configuration = this.configuration.GetSection(key);
-                var optionsName = culture.Equals(this.defaultCulture.Name, StringComparison.OrdinalIgnoreCase) ? Options.DefaultName : culture;
+                var optionsName = this.defaultCulture.Equals(culture) ? Options.DefaultName : culture.Name;
                 this.services.AddOptions<TOptions>(optionsName).Bind(configuration);
             }
 
@@ -48,7 +48,7 @@ namespace OptionsLocalization
 
                 foreach (var culture in optionsCultures)
                 {
-                    options.Cultures.Add(culture);
+                    options.SupportedCultures.Add(culture);
                 }
 
                 if (optionsPath != null)
@@ -89,13 +89,17 @@ namespace OptionsLocalization
         }
 
 
-        private static IEnumerable<string> FindOptionsCultures(string? optionsPath)
+        private static IEnumerable<CultureInfo> FindOptionsCultures(string? optionsPath)
         {
             if (Directory.Exists(optionsPath))
             {
                 foreach (var jsonFile in Directory.GetFiles(optionsPath, "*.json"))
                 {
-                    yield return Path.GetFileNameWithoutExtension(jsonFile);
+                    var culture = Path.GetFileNameWithoutExtension(jsonFile);
+                    if (OptionsLocalizer.TryGetCultureInfo(culture, out var value))
+                    {
+                        yield return value;
+                    }
                 }
             }
         }

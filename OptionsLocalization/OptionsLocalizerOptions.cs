@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 
 namespace OptionsLocalization
@@ -8,7 +7,7 @@ namespace OptionsLocalization
     {
         public CultureInfo DefaultCulture { get; set; } = CultureInfo.CurrentCulture;
 
-        public HashSet<string> Cultures { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        public HashSet<CultureInfo> SupportedCultures { get; } = [];
 
         public HashSet<string> OptionsPaths { get; } = [];
     }

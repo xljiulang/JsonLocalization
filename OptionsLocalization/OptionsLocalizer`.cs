@@ -24,7 +24,7 @@ namespace OptionsLocalization
 
         public CultureInfo DefaultCulture => this.options.Value.DefaultCulture;
 
-        public string[] SupportedCultures => this.options.Value.Cultures.ToArray();
+        public CultureInfo[] SupportedCultures => this.options.Value.SupportedCultures.ToArray();
 
         public OptionsLocalizer(
             IOptions<OptionsLocalizerOptions<TOptions>> options,
@@ -68,10 +68,10 @@ namespace OptionsLocalization
 
         public void WriteToValueFiles()
         {
-            foreach (var culture in this.options.Value.Cultures)
+            foreach (var culture in this.options.Value.SupportedCultures)
             {
                 var optionsValue = this.Get(culture);
-                this.WriteToValueFile(optionsValue, culture);
+                this.WriteToValueFile(optionsValue, culture.Name);
             }
         }
 

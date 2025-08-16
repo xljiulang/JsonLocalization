@@ -22,7 +22,7 @@ namespace OptionsLocalization
         /// <summary>
         /// 获取选项已支持的语言区域
         /// </summary>
-        string[] SupportedCultures { get; }
+        CultureInfo[] SupportedCultures { get; }
 
         /// <summary>
         /// 获取指定语言区域的本地化选项
