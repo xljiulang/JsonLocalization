@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using OptionsLocalization;
 using System.Globalization;
 using System.IO;
@@ -31,19 +30,13 @@ namespace Microsoft.Extensions.Hosting
         /// <returns></returns>
         public static IOptionsLocalizerBuilder AddOptionsLocalizer(this IHostApplicationBuilder builder, CultureInfo defaultCulture)
         {
-            builder.Configuration.AddOptionsLocalizer();
-            return builder.Services.AddOptionsLocalizer(builder.Configuration, defaultCulture);
-        }
-
-        private static void AddOptionsLocalizer(this IConfigurationBuilder builder)
-        {
             foreach (var optionsPath in Directory.GetDirectories(OptionsLocalizer.LocalizationRoot))
             {
                 foreach (var jsonFile in Directory.GetFiles(optionsPath, "*.json"))
                 {
-                    if (builder.Sources.OfType<CultureJsonLocalizerConfigurationSource>().Any(i => i.Path == jsonFile) == false)
+                    if (builder.Configuration.Sources.OfType<CultureJsonLocalizerConfigurationSource>().Any(i => i.Path == jsonFile) == false)
                     {
-                        builder.Add<CultureJsonLocalizerConfigurationSource>(s =>
+                        builder.Configuration.Add<CultureJsonLocalizerConfigurationSource>(s =>
                         {
                             s.Path = jsonFile;
                             s.Optional = true;
@@ -53,16 +46,8 @@ namespace Microsoft.Extensions.Hosting
                     }
                 }
             }
-        }
 
-        private static OptionsLocalizerBuilder AddOptionsLocalizer(this IServiceCollection services, IConfiguration configuration, CultureInfo defaultCulture)
-        {
-            return new OptionsLocalizerBuilder
-            {
-                Services = services,
-                Configuration = configuration,
-                DefaultCulture = defaultCulture,
-            };
+            return new OptionsLocalizerBuilder(defaultCulture, builder.Services, builder.Configuration);
         }
     }
 }

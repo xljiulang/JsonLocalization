@@ -12,12 +12,16 @@ namespace OptionsLocalization
 {
     sealed class OptionsLocalizerBuilder : IOptionsLocalizerBuilder
     {
-        public required CultureInfo DefaultCulture { get; init; }
+        private readonly CultureInfo defaultCulture;
+        private readonly IServiceCollection services;
+        private readonly IConfiguration configuration;
 
-        public required IServiceCollection Services { get; init; }
-
-        public required IConfiguration Configuration { get; init; }
-
+        public OptionsLocalizerBuilder(CultureInfo defaultCulture, IServiceCollection services, IConfiguration configuration)
+        {
+            this.defaultCulture = defaultCulture;
+            this.services = services;
+            this.configuration = configuration;
+        }
 
         public IOptionsLocalizerBuilder Configure<TOptions>() where TOptions : class, new()
         {
@@ -27,31 +31,31 @@ namespace OptionsLocalization
             foreach (var culture in optionsCultures)
             {
                 var key = $"{OptionsLocalizer.LocalizationRoot}:{typeof(TOptions).Name}:{culture}";
-                var configuration = this.Configuration.GetSection(key);
+                var configuration = this.configuration.GetSection(key);
 
-                if (culture.Equals(this.DefaultCulture.Name, StringComparison.OrdinalIgnoreCase))
+                if (culture.Equals(this.defaultCulture.Name, StringComparison.OrdinalIgnoreCase))
                 {
-                    this.Services.Configure<TOptions>(configuration);
+                    this.services.Configure<TOptions>(configuration);
                 }
                 else
                 {
-                    this.Services.Configure<TOptions>(culture, configuration);
+                    this.services.Configure<TOptions>(culture, configuration);
                 }
             }
 
-            this.Services.Configure<OptionsLocalizerOptions<TOptions>>(options =>
+            this.services.Configure<OptionsLocalizerOptions<TOptions>>(options =>
             {
                 options.Cultures = optionsCultures;
                 options.OptionsPath = optionsPath;
-                options.DefaultCulture = this.DefaultCulture;
+                options.DefaultCulture = this.defaultCulture;
             });
 
-            this.Services.TryAddTransient<IOptionsFactory<TOptions>, CultureOptionsFactory<TOptions>>();
-            this.Services.TryAddSingleton<OptionsLocalizer<TOptions>>();
-            this.Services.TryAddSingleton<IOptionsLocalizer<TOptions>>(s => s.GetRequiredService<OptionsLocalizer<TOptions>>());
-            this.Services.TryAddTransient(s => s.GetRequiredService<OptionsLocalizer<TOptions>>().CurrentValue);
-            this.Services.AddSingleton<IOptionsLocalizer>(s => s.GetRequiredService<OptionsLocalizer<TOptions>>());
-            this.Services.AddHostedService<OptionsLocalizerHostedService>();
+            this.services.TryAddTransient<IOptionsFactory<TOptions>, CultureOptionsFactory<TOptions>>();
+            this.services.TryAddSingleton<OptionsLocalizer<TOptions>>();
+            this.services.TryAddSingleton<IOptionsLocalizer<TOptions>>(s => s.GetRequiredService<OptionsLocalizer<TOptions>>());
+            this.services.TryAddTransient(s => s.GetRequiredService<OptionsLocalizer<TOptions>>().CurrentValue);
+            this.services.AddSingleton<IOptionsLocalizer>(s => s.GetRequiredService<OptionsLocalizer<TOptions>>());
+            this.services.AddHostedService<OptionsLocalizerHostedService>();
             return this;
         }
 
