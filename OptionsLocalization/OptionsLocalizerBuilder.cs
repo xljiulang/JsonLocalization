@@ -32,7 +32,7 @@ namespace OptionsLocalization
         public IOptionsLocalizerBuilder Configure<TOptions>() where TOptions : class, new()
         {
             var optionsPath = FindOptionsPath<TOptions>();
-            var optionsCultures = FindOptionsCultures(optionsPath).ToArray().AsReadOnly();
+            var optionsCultures = FindOptionsCultures(optionsPath).ToArray();
 
             foreach (var culture in optionsCultures)
             {
