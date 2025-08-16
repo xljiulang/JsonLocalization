@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace OptionsLocalization
@@ -15,14 +16,9 @@ namespace OptionsLocalization
         TOptions CurrentValue { get; }
 
         /// <summary>
-        /// 选项的缺省语言区域
-        /// </summary>
-        CultureInfo DefaultCulture { get; }
-
-        /// <summary>
         /// 获取选项已支持的语言区域
         /// </summary>
-        CultureInfo[] SupportedCultures { get; }
+        IReadOnlyCollection<CultureInfo> SupportedCultures { get; }
 
         /// <summary>
         /// 获取指定语言区域的本地化选项
@@ -34,7 +30,7 @@ namespace OptionsLocalization
         /// <summary>
         /// 获取指定语言区域的本地化选项
         /// </summary>
-        /// <param name="culture">指定语言区域名称</param>
+        /// <param name="culture">指定语言区域</param>
         /// <returns></returns>
         TOptions Get(CultureInfo culture);
 

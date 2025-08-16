@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using OptionsLocalization;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,8 @@ namespace Microsoft.Extensions.Hosting
     /// </summary>
     public static class HostApplicationBuilderExtensions
     {
+        private record LocalizationRoot(string Value);
+
         /// <summary>
         /// 添加​本地化选项工具​
         /// </summary>
@@ -40,7 +43,7 @@ namespace Microsoft.Extensions.Hosting
             CultureInfo defaultCulture,
             string localizationRoot = "localizations")
         {
-            CheckLocalizationRoot(localizationRoot);
+            CheckLocalizationRoot(localizationRoot, builder.Services);
 
             foreach (var optionsPath in Directory.GetDirectories(localizationRoot))
             {
@@ -62,7 +65,7 @@ namespace Microsoft.Extensions.Hosting
             return new OptionsLocalizerBuilder(defaultCulture, localizationRoot, builder.Services, builder.Configuration);
         }
 
-        private static void CheckLocalizationRoot(string localizationRoot)
+        private static void CheckLocalizationRoot(string localizationRoot, IServiceCollection services)
         {
             ArgumentException.ThrowIfNullOrEmpty(localizationRoot);
 
@@ -71,6 +74,16 @@ namespace Microsoft.Extensions.Hosting
                 Path.GetDirectoryName(localizationRoot.AsSpan()).Length > 0)
             {
                 throw new ArgumentException("Localization root must be a directory name.", nameof(localizationRoot));
+            }
+
+            var descriptor = services.FirstOrDefault(i => i.ServiceType == typeof(LocalizationRoot));
+            if (descriptor == null)
+            {
+                services.AddSingleton(new LocalizationRoot(localizationRoot));
+            }
+            else if (descriptor.ImplementationInstance is LocalizationRoot root && root.Value != localizationRoot)
+            {
+                throw new InvalidOperationException($"Localization root has already been set to '{root.Value}'.");
             }
 
             Directory.CreateDirectory(localizationRoot);

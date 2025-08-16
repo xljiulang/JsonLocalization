@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading;
@@ -22,9 +22,7 @@ namespace OptionsLocalization
 
         public TOptions CurrentValue => this.Get(Thread.CurrentThread.CurrentCulture);
 
-        public CultureInfo DefaultCulture => this.options.Value.DefaultCulture;
-
-        public CultureInfo[] SupportedCultures => this.options.Value.SupportedCultures.Keys.ToArray();
+        public IReadOnlyCollection<CultureInfo> SupportedCultures => this.options.Value.OptionsCultures;
 
         public OptionsLocalizer(
             IOptions<OptionsLocalizerOptions<TOptions>> options,
@@ -66,7 +64,7 @@ namespace OptionsLocalization
 
         public void WriteToValueFiles()
         {
-            foreach (var culture in this.options.Value.SupportedCultures.Keys)
+            foreach (var culture in this.options.Value.OptionsCultures)
             {
                 var optionsValue = this.Get(culture);
                 this.WriteToValueFile(optionsValue, culture);
@@ -80,27 +78,20 @@ namespace OptionsLocalization
         /// <param name="culture"></param>
         private void WriteToValueFile(TOptions optionsValue, CultureInfo culture)
         {
-            if (this.options.Value.SupportedCultures.TryGetValue(culture, out var optionsPaths))
+            var optionsPath = this.options.Value.OptionsPath;
+            if (Directory.Exists(optionsPath))
             {
-                if (optionsPaths.Count > 0)
+                try
                 {
-                    var valueJson = JsonSerializer.SerializeToUtf8Bytes(optionsValue, jsonSerializerOptions);
-                    foreach (var optionsPath in optionsPaths)
-                    {
-                        if (Directory.Exists(optionsPath))
-                        {
-                            try
-                            {
-                                var valueFilePath = Path.Combine(optionsPath, $"{culture.Name}.json.value");
-                                using var valueFileStream = File.Create(valueFilePath);
-                                valueFileStream.Write("// 这是自动生成的完整语言文件内容，删除或修改此文件对应用没有影响\r\n"u8);
-                                valueFileStream.Write(valueJson);
-                            }
-                            catch (Exception)
-                            {
-                            }
-                        }
-                    }
+                    var valueFilePath = Path.Combine(optionsPath, $"{culture.Name}.json.value");
+                    var valueJson = JsonSerializer.SerializeToUtf8Bytes(optionsValue, jsonSerializerOptions);                   
+
+                    using var valueFileStream = File.Create(valueFilePath);
+                    valueFileStream.Write("// 这是自动生成的完整语言文件内容，删除或修改此文件对应用没有影响\r\n"u8);
+                    valueFileStream.Write(valueJson);
+                }
+                catch (Exception)
+                {
                 }
             }
         }
