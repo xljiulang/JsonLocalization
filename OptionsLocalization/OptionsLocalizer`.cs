@@ -51,17 +51,15 @@ namespace OptionsLocalization
         /// </summary>
         /// <param name="listener"></param>
         /// <returns></returns>
-        public IDisposable? OnChange(Action<TOptions, string> listener)
+        public IDisposable? OnChange(Action<TOptions, CultureInfo> listener)
         {
             return this.optionsMonitor.OnChange(OnChange);
             void OnChange(TOptions optionsValue, string? name)
             {
-                var culture = name;
-                if (string.IsNullOrEmpty(culture))
+                if (OptionsLocalizer.TryGetCultureInfo(name, out var culture) == false)
                 {
-                    culture = this.options.Value.DefaultCulture.Name;
+                    culture = this.options.Value.DefaultCulture;
                 }
-
                 listener(optionsValue, culture);
             }
         }
@@ -71,7 +69,7 @@ namespace OptionsLocalization
             foreach (var culture in this.options.Value.SupportedCultures)
             {
                 var optionsValue = this.Get(culture);
-                this.WriteToValueFile(optionsValue, culture.Name);
+                this.WriteToValueFile(optionsValue, culture);
             }
         }
 
@@ -80,7 +78,7 @@ namespace OptionsLocalization
         /// </summary>
         /// <param name="optionsValue"></param>
         /// <param name="culture"></param>
-        private void WriteToValueFile(TOptions optionsValue, string culture)
+        private void WriteToValueFile(TOptions optionsValue, CultureInfo culture)
         {
             var optionsPaths = this.options.Value.OptionsPaths;
             if (optionsPaths.Count == 0)
@@ -91,7 +89,7 @@ namespace OptionsLocalization
             var valueJson = JsonSerializer.SerializeToUtf8Bytes(optionsValue, jsonSerializerOptions);
             foreach (var optionsPath in optionsPaths)
             {
-                var jsonFilePath = Path.Combine(optionsPath, $"{culture}.json");
+                var jsonFilePath = Path.Combine(optionsPath, $"{culture.Name}.json");
                 if (File.Exists(jsonFilePath) == false)
                 {
                     continue;

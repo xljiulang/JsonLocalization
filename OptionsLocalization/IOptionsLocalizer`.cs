@@ -43,6 +43,6 @@ namespace OptionsLocalization
         /// </summary>
         /// <param name="listener">监听器</param>
         /// <returns></returns>
-        IDisposable? OnChange(Action<TOptions, string> listener);
+        IDisposable? OnChange(Action<TOptions, CultureInfo> listener);
     }
 }
