@@ -11,14 +11,29 @@ namespace OptionsLocalization
     /// </summary>
     sealed class CultureJsonLocalizerConfigurationSource : JsonConfigurationSource
     {
+        public string? LocalizationRoot { get; set; }
+
         public override IConfigurationProvider Build(IConfigurationBuilder builder)
         {
+            if (this.LocalizationRoot == null)
+            {
+                throw new InvalidOperationException("LocalizationRoot must be set.");
+            }
+
             EnsureDefaults(builder);
-            return new LocalizerConfigurationProvider(this);
+            return new LocalizerConfigurationProvider(this, this.LocalizationRoot);
         }
 
-        private class LocalizerConfigurationProvider(CultureJsonLocalizerConfigurationSource source) : JsonConfigurationProvider(source)
+        private class LocalizerConfigurationProvider : JsonConfigurationProvider
         {
+            private readonly string localizationRoot;
+
+            public LocalizerConfigurationProvider(CultureJsonLocalizerConfigurationSource source, string localizationRoot)
+                : base(source)
+            {
+                this.localizationRoot = localizationRoot;
+            }
+
             public override void Load(Stream stream)
             {
                 base.Load(stream);
@@ -33,7 +48,7 @@ namespace OptionsLocalization
                 var optionsPath = System.IO.Path.GetDirectoryName(filePath);
                 var optionsDirName = System.IO.Path.GetFileName(optionsPath);
 
-                var keyPrefix = $"{OptionsLocalizer.LocalizationRoot}:{optionsDirName}:{culture}";
+                var keyPrefix = $"{this.localizationRoot}:{optionsDirName}:{culture}";
                 this.Data = this.Data.ToDictionary(kv => $"{keyPrefix}:{kv.Key}", kv => kv.Value, StringComparer.OrdinalIgnoreCase);
             }
         }

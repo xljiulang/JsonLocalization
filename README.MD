@@ -24,8 +24,6 @@ static void Main(string[] args)
 {
     var builder = WebApplication.CreateBuilder(args);
 
-    OptionsLocalizer.LocalizationRoot = "localizations";
-
     // 添加本地化工具，默认语言区域为 "en"
     builder.AddOptionsLocalizer(defaultCulture: "en").Configure<AppOptions>();
 
@@ -61,7 +59,7 @@ public class HomeController
         [FromServices] AppOptions appOptions,
         [FromServices] IOptionsLocalizer<AppOptions> localizer)
     {
-        Debug.Assert(appOptions == localizer.Current);
+        Debug.Assert(appOptions == localizer.CurrentValue);
         return appOptions;
     }
 }

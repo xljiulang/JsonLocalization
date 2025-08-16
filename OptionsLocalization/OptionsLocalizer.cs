@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
 using System.Threading;
 
 namespace OptionsLocalization
@@ -9,30 +8,7 @@ namespace OptionsLocalization
     /// 本地化选项工具
     /// </summary>
     public static class OptionsLocalizer
-    {
-        private static string root = "localizations";
-
-        /// <summary>
-        /// 获取或设置本地化选项的资源文件根目录
-        /// 默认为 localizations
-        /// </summary>
-        public static string LocalizationRoot
-        {
-            get
-            {
-                Directory.CreateDirectory(root);
-                return root;
-            }
-            set
-            {
-                if (Path.GetDirectoryName(value.AsSpan()).Length > 0)
-                {
-                    throw new ArgumentException(value);
-                }
-                root = value;
-            }
-        }
-
+    {       
         /// <summary>
         /// 设置当前线程的语言区域为指定值
         /// </summary>

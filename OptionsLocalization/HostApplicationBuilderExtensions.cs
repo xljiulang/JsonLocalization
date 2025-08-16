@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using OptionsLocalization;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -15,11 +17,15 @@ namespace Microsoft.Extensions.Hosting
         /// 添加​本地化选项工具​
         /// </summary>
         /// <param name="builder"></param>
-        /// <param name="defaultCulture">选项的缺省语言区域</param> 
+        /// <param name="defaultCulture">选项的缺省语言区域</param>
+        /// <param name="localizationRoot">本地化选项的资源文件根目录</param> 
         /// <returns></returns>
-        public static IOptionsLocalizerBuilder AddOptionsLocalizer(this IHostApplicationBuilder builder, string defaultCulture)
+        public static IOptionsLocalizerBuilder AddOptionsLocalizer(
+            this IHostApplicationBuilder builder,
+            string defaultCulture,
+            string localizationRoot = "localizations")
         {
-            return builder.AddOptionsLocalizer(CultureInfo.GetCultureInfo(defaultCulture));
+            return builder.AddOptionsLocalizer(CultureInfo.GetCultureInfo(defaultCulture), localizationRoot);
         }
 
         /// <summary>
@@ -27,27 +33,54 @@ namespace Microsoft.Extensions.Hosting
         /// </summary> 
         /// <param name="builder"></param>
         /// <param name="defaultCulture">选项的缺省语言区域</param> 
+        /// <param name="localizationRoot">本地化选项的资源文件根目录</param> 
         /// <returns></returns>
-        public static IOptionsLocalizerBuilder AddOptionsLocalizer(this IHostApplicationBuilder builder, CultureInfo defaultCulture)
+        public static IOptionsLocalizerBuilder AddOptionsLocalizer(
+            this IHostApplicationBuilder builder,
+            CultureInfo defaultCulture,
+            string localizationRoot = "localizations")
         {
-            foreach (var optionsPath in Directory.GetDirectories(OptionsLocalizer.LocalizationRoot))
+            CheckLocalizationRoot(localizationRoot);
+
+            foreach (var optionsPath in Directory.GetDirectories(localizationRoot))
             {
-                foreach (var jsonFile in Directory.GetFiles(optionsPath, "*.json"))
+                foreach (var jsonFilePath in Directory.GetFiles(optionsPath, "*.json"))
                 {
-                    if (builder.Configuration.Sources.OfType<CultureJsonLocalizerConfigurationSource>().Any(i => i.Path == jsonFile) == false)
+                    if (ContainsJsonFile(builder.Configuration.Sources, jsonFilePath) == false)
                     {
                         builder.Configuration.Add<CultureJsonLocalizerConfigurationSource>(s =>
                         {
-                            s.Path = jsonFile;
+                            s.Path = jsonFilePath;
                             s.Optional = true;
                             s.ReloadOnChange = true;
                             s.ResolveFileProvider();
+                            s.LocalizationRoot = localizationRoot;
                         });
                     }
                 }
             }
 
-            return new OptionsLocalizerBuilder(defaultCulture, builder.Services, builder.Configuration);
+            return new OptionsLocalizerBuilder(defaultCulture, localizationRoot, builder.Services, builder.Configuration);
+        }
+
+        private static void CheckLocalizationRoot(string localizationRoot)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(localizationRoot);
+
+            if (localizationRoot.StartsWith('.') ||
+                Path.IsPathRooted(localizationRoot) ||
+                Path.GetDirectoryName(localizationRoot.AsSpan()).Length > 0)
+            {
+                throw new ArgumentException("Localization root must be a directory name.", nameof(localizationRoot));
+            }
+
+            Directory.CreateDirectory(localizationRoot);
+        }
+
+        private static bool ContainsJsonFile(IList<IConfigurationSource> sources, string jsonFilePath)
+        {
+            var comparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+            return sources.OfType<CultureJsonLocalizerConfigurationSource>().Any(i => jsonFilePath.Equals(i.Path, comparison));
         }
     }
 }

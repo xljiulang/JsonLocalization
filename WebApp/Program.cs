@@ -12,13 +12,11 @@ namespace WebApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            OptionsLocalizer.LocalizationRoot = "localizations";
-
             // 添加本地化工具，选项的缺省语言区域为 "en"
             builder.AddOptionsLocalizer(defaultCulture: "en")
                 .Configure<AppOptions>()
                 .Configure<HomeOptions>();
-
+             
             builder.Services.AddControllers();
             var app = builder.Build();
 
@@ -26,7 +24,7 @@ namespace WebApp
             app.Use(next => context =>
             {
                 context.Request.Query.TryGetValue("culture", out var culture);
-                OptionsLocalizer.SetCurrentThreadCulture(culture, "zh");
+                OptionsLocalizer.SetCurrentThreadCulture(culture, "en");
                 return next(context);
             });
 

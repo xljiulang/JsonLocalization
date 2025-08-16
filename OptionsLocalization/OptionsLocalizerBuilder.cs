@@ -13,12 +13,18 @@ namespace OptionsLocalization
     sealed class OptionsLocalizerBuilder : IOptionsLocalizerBuilder
     {
         private readonly CultureInfo defaultCulture;
+        private readonly string localizationRoot;
         private readonly IServiceCollection services;
         private readonly IConfiguration configuration;
 
-        public OptionsLocalizerBuilder(CultureInfo defaultCulture, IServiceCollection services, IConfiguration configuration)
+        public OptionsLocalizerBuilder(
+            CultureInfo defaultCulture,
+            string localizationRoot,
+            IServiceCollection services,
+            IConfiguration configuration)
         {
             this.defaultCulture = defaultCulture;
+            this.localizationRoot = localizationRoot;
             this.services = services;
             this.configuration = configuration;
         }
@@ -30,7 +36,7 @@ namespace OptionsLocalization
 
             foreach (var culture in optionsCultures)
             {
-                var key = $"{OptionsLocalizer.LocalizationRoot}:{typeof(TOptions).Name}:{culture}";
+                var key = $"{this.localizationRoot}:{typeof(TOptions).Name}:{culture}";
                 var configuration = this.configuration.GetSection(key);
 
                 if (culture.Equals(this.defaultCulture.Name, StringComparison.OrdinalIgnoreCase))
@@ -60,12 +66,12 @@ namespace OptionsLocalization
         }
 
 
-        private static string? FindOptionsPath<TOptions>()
+        private string? FindOptionsPath<TOptions>()
         {
-            var optionsPaths = Directory.GetDirectories(OptionsLocalizer.LocalizationRoot);
+            var optionsPaths = Directory.GetDirectories(this.localizationRoot);
             foreach (var optionsPath in optionsPaths)
             {
-                if (typeof(TOptions).Name.Equals(Path.GetFileName(optionsPath)))
+                if (typeof(TOptions).Name.Equals(Path.GetFileName(optionsPath), StringComparison.Ordinal))
                 {
                     return optionsPath;
                 }
