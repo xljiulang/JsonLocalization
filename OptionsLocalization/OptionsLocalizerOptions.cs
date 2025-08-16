@@ -9,7 +9,7 @@ namespace OptionsLocalization
     {
         public CultureInfo DefaultCulture { get; set; } = CultureInfo.CurrentCulture;
 
-        public string OptionsPath { get; set; } = string.Empty;
+        public string? OptionsPath { get; set; } 
 
         public ReadOnlyCollection<string> Cultures { get; set; } = Array.Empty<string>().AsReadOnly();
     }

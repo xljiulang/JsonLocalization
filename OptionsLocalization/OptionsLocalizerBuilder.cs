@@ -47,13 +47,16 @@ namespace OptionsLocalization
             });
 
             this.Services.TryAddTransient<IOptionsFactory<TOptions>, CultureOptionsFactory<TOptions>>();
-            this.Services.TryAddSingleton<IOptionsLocalizer<TOptions>, OptionsLocalizer<TOptions>>();
-            this.Services.TryAddTransient(s => s.GetRequiredService<IOptionsLocalizer<TOptions>>().CurrentValue);
+            this.Services.TryAddSingleton<OptionsLocalizer<TOptions>>();
+            this.Services.TryAddSingleton<IOptionsLocalizer<TOptions>>(s => s.GetRequiredService<OptionsLocalizer<TOptions>>());
+            this.Services.TryAddTransient(s => s.GetRequiredService<OptionsLocalizer<TOptions>>().CurrentValue);
+            this.Services.AddSingleton<IOptionsLocalizer>(s => s.GetRequiredService<OptionsLocalizer<TOptions>>());
+            this.Services.AddHostedService<OptionsLocalizerHostedService>();
             return this;
         }
 
 
-        private static string FindOptionsPath<TOptions>()
+        private static string? FindOptionsPath<TOptions>()
         {
             var optionsPath = Path.Combine(OptionsLocalizer.LocalizationRoot, typeof(TOptions).Name);
             if (Path.Exists(optionsPath))
@@ -61,20 +64,23 @@ namespace OptionsLocalization
                 return optionsPath;
             }
 
-            foreach (var path in Directory.GetDirectories(OptionsLocalizer.LocalizationRoot))
+            if (OperatingSystem.IsWindows() == false)
             {
-                var optionsDirName = Path.GetFileName(path);
-                if (typeof(TOptions).Name.Equals(optionsDirName, StringComparison.OrdinalIgnoreCase))
+                foreach (var path in Directory.GetDirectories(OptionsLocalizer.LocalizationRoot))
                 {
-                    return path;
+                    var optionsDirName = Path.GetFileName(path);
+                    if (typeof(TOptions).Name.Equals(optionsDirName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return path;
+                    }
                 }
             }
 
-            return optionsPath;
+            return null;
         }
 
 
-        private static IEnumerable<string> FindOptionsCultures(string optionsPath)
+        private static IEnumerable<string> FindOptionsCultures(string? optionsPath)
         {
             if (Directory.Exists(optionsPath))
             {

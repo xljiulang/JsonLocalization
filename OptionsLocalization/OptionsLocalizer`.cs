@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace OptionsLocalization
 {
-    sealed class OptionsLocalizer<TOptions> : IOptionsLocalizer<TOptions>
+    sealed class OptionsLocalizer<TOptions> : IOptionsLocalizer, IOptionsLocalizer<TOptions>
     {
         private readonly IOptions<OptionsLocalizerOptions<TOptions>> options;
         private readonly IOptionsMonitor<TOptions> optionsMonitor;
@@ -32,12 +32,6 @@ namespace OptionsLocalization
         {
             this.options = options;
             this.optionsMonitor = optionsMonitor;
-
-            foreach (var culture in options.Value.Cultures)
-            {
-                var optionsValue = optionsMonitor.Get(culture);
-                this.WriteToValueFile(optionsValue, culture);
-            }
 
             this.OnChange(WriteToValueFile);
         }
@@ -64,6 +58,15 @@ namespace OptionsLocalization
                 }
 
                 listener(optionsValue, culture);
+            }
+        }
+
+        public void WriteToValueFiles()
+        {
+            foreach (var culture in this.options.Value.Cultures)
+            {
+                var optionsValue = this.Get(culture);
+                this.WriteToValueFile(optionsValue, culture);
             }
         }
 
