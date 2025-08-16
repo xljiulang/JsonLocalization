@@ -62,24 +62,22 @@ namespace OptionsLocalization
 
         private static string? FindOptionsPath<TOptions>()
         {
-            var optionsPath = Path.Combine(OptionsLocalizer.LocalizationRoot, typeof(TOptions).Name);
-            if (Path.Exists(optionsPath))
+            var optionsPaths = Directory.GetDirectories(OptionsLocalizer.LocalizationRoot);
+            foreach (var optionsPath in optionsPaths)
             {
-                return optionsPath;
-            }
-
-            if (OperatingSystem.IsWindows() == false)
-            {
-                foreach (var path in Directory.GetDirectories(OptionsLocalizer.LocalizationRoot))
+                if (typeof(TOptions).Name.Equals(Path.GetFileName(optionsPath)))
                 {
-                    var optionsDirName = Path.GetFileName(path);
-                    if (typeof(TOptions).Name.Equals(optionsDirName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return path;
-                    }
+                    return optionsPath;
                 }
             }
 
+            foreach (var optionsPath in optionsPaths)
+            {
+                if (typeof(TOptions).Name.Equals(Path.GetFileName(optionsPath), StringComparison.OrdinalIgnoreCase))
+                {
+                    return optionsPath;
+                }
+            }
             return null;
         }
 

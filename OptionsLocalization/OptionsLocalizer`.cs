@@ -86,10 +86,10 @@ namespace OptionsLocalization
             try
             {
                 var valueFilePath = Path.Combine(optionsPath, $"{culture}.json.value");
-                using var fileStream = File.Create(valueFilePath);
+                using var valueFileStream = File.Create(valueFilePath);
                 var valueJson = JsonSerializer.SerializeToUtf8Bytes(optionsValue, jsonSerializerOptions);
-                fileStream.Write("// 这是自动生成的语言文件的完整键和值\r\n"u8);
-                fileStream.Write(valueJson);
+                valueFileStream.Write("// 这是自动生成的语言文件的完整键和值\r\n"u8);
+                valueFileStream.Write(valueJson);
             }
             catch (Exception)
             {
