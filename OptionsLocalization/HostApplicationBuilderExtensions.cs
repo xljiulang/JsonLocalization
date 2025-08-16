@@ -54,7 +54,6 @@ namespace Microsoft.Extensions.Hosting
                             s.Optional = true;
                             s.ReloadOnChange = true;
                             s.ResolveFileProvider();
-                            s.LocalizationRoot = localizationRoot;
                         });
                     }
                 }

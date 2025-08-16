@@ -43,7 +43,7 @@ namespace OptionsLocalization
                 options.DefaultCulture = this.defaultCulture;
             });
 
-            var optionsPath = FindOptionsPath<TOptions>();
+            var optionsPath = FindOptionsPath<TOptions>(this.localizationRoot);
             if (optionsPath == null)
             {
                 return this;
@@ -52,10 +52,10 @@ namespace OptionsLocalization
             var optionsCultures = FindOptionsCultures(optionsPath).ToArray();
             foreach (var culture in optionsCultures)
             {
-                var key = $"{this.localizationRoot}:{typeof(TOptions).Name}:{culture}";
+                var key = $"{nameof(OptionsLocalization)}:{typeof(TOptions).Name}:{culture}";
                 var configuration = this.configuration.GetSection(key);
                 var optionsName = this.defaultCulture.Equals(culture) ? Options.DefaultName : culture.Name;
-                this.services.AddOptions<TOptions>(optionsName).Bind(configuration);
+                this.services.Configure<TOptions>(optionsName, configuration);
             }
 
             this.services.Configure<OptionsLocalizerOptions<TOptions>>(options =>
@@ -77,9 +77,9 @@ namespace OptionsLocalization
         }
 
 
-        private string? FindOptionsPath<TOptions>()
+        private static string? FindOptionsPath<TOptions>(string localizationRoot)
         {
-            var optionsPaths = Directory.GetDirectories(this.localizationRoot);
+            var optionsPaths = Directory.GetDirectories(localizationRoot);
             foreach (var optionsPath in optionsPaths)
             {
                 if (typeof(TOptions).Name.Equals(Path.GetFileName(optionsPath), StringComparison.Ordinal))
