@@ -24,7 +24,7 @@ static void Main(string[] args)
 {
     var builder = WebApplication.CreateBuilder(args);
 
-    // OptionsLocalizer.LocalizationRoot = "localizations";
+    OptionsLocalizer.LocalizationRoot = "localizations";
 
     // 添加本地化工具，默认语言区域为 "en"
     builder.AddOptionsLocalizer(defaultCulture: "en").Configure<AppOptions>();
@@ -62,14 +62,13 @@ public class HomeController
         [FromServices] IOptionsLocalizer<AppOptions> localizer)
     {
         Debug.Assert(appOptions == localizer.Current);
-        return locale;
+        return appOptions;
     }
 }
 ```
 
 #### 4 添加语言文件
-1. 打开到`localizations`目录
-2. 新建`AppOptions`子目录(目录名与数据类型名保持一致)
-3. 在子目录创建`zh.json`、`zh-CN.json`等包含`{}`内容的语言文件
-4. 启动运行你的项目
-5. 在`AppOptions`子目录找到相关的`.value`文件，粘贴到对应的`.json`语言文件并翻译修改
+1. 新建`localizations`目录
+2. 新建`AppOptions`子目录(保持与选项类型名一致)
+3. 新建`zh.json`、`zh-CN.json`等包含`{}` json 结构的语言文件
+4. 启动运行你的项目，在`AppOptions`子目录找到`.value`文件，粘贴到对应的`.json`语言文件并翻译修改
